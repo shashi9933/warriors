@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Default: Neon Cyber */
+    --bg-primary: 5 5 16;
+    /* #050510 */
+    --text-primary: 255 255 255;
+    --accent-primary: 0 243 255;
+    /* #00f3ff */
+    --accent-secondary: 255 0 255;
+    /* #ff00ff */
+    --glass-border: 255 255 255;
+    --glass-alpha: 0.1;
+  }
+
+  .neon-cyber {
+    --bg-primary: 5 5 16;
+    --text-primary: 255 255 255;
+    --accent-primary: 0 243 255;
+    --accent-secondary: 255 0 255;
+  }
+
+  .robotic {
+    --bg-primary: 20 25 30;
+    /* Gunmetal */
+    --text-primary: 220 230 240;
+    --accent-primary: 100 180 255;
+    /* Steel Blue */
+    --accent-secondary: 255 215 0;
+    /* Gold wire */
+  }
+
+  .terminal {
+    --bg-primary: 0 10 0;
+    /* Deep Green/Black */
+    --text-primary: 0 255 0;
+    /* Matrix Green */
+    --accent-primary: 0 200 0;
+    --accent-secondary: 50 150 50;
+    font-family: 'Courier New', monospace;
+    /* Override font */
+  }
+
+  .cyberpunk {
+    --bg-primary: 20 20 10;
+    /* Dark Yellow/Black tint */
+    --text-primary: 255 240 0;
+    /* Cyber Yellow */
+    --accent-primary: 255 0 60;
+    /* Glitch Red */
+    --accent-secondary: 0 240 255;
+    /* Blue */
+  }
+
+  body {
+    background-color: rgb(var(--bg-primary));
+    color: rgb(var(--text-primary));
+    transition: background-color 0.5s ease, color 0.5s ease;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-orbitron tracking-wider;
+    color: rgb(var(--accent-primary));
+  }
+}
+
+@layer components {
+  .glass-panel {
+    background: rgb(var(--bg-primary) / 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgb(var(--accent-primary) / 0.3);
+    border-radius: 0.75rem;
+    /* rounded-xl */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .btn-primary {
+    background: linear-gradient(90deg, rgb(var(--accent-primary)), rgb(var(--accent-secondary)));
+    color: rgb(var(--bg-primary));
+    /* Contrast text */
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.5rem;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgb(var(--accent-primary) / 0.5);
+  }
+
+  .btn-accent {
+    background: transparent;
+    border: 1px solid rgb(var(--accent-primary));
+    color: rgb(var(--accent-primary));
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.5rem;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+  }
+
+  .btn-accent:hover {
+    background: rgb(var(--accent-primary) / 0.1);
+  }
+}
