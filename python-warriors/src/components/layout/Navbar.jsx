@@ -40,9 +40,9 @@ const Navbar = () => {
                 {/* Logo */}
                 <Link to="/" className="flex items-center gap-2 group">
                     <div className="w-8 h-8 bg-gradient-to-br from-neon-cyan to-blue-600 rounded-lg flex items-center justify-center shadow-neon-blue group-hover:scale-110 transition-transform">
-                        <span className="font-orbitron font-bold theme-text text-lg">W</span>
+                        <span className="font-orbitron font-bold theme-text text-base">W</span>
                     </div>
-                    <span className="font-orbitron font-bold text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-magenta group-hover:text-neon-cyan transition-colors">
+                    <span className="font-orbitron font-bold text-lg tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-magenta group-hover:text-neon-cyan transition-colors">
                         PYTHON WARRIORS
                     </span>
                 </Link>
@@ -55,7 +55,7 @@ const Navbar = () => {
                             to={item.path}
                             onClick={() => playSFX('CLICK')}
                             className={clsx(
-                                "flex items-center gap-2 px-3 py-2 rounded-lg font-orbitron text-sm tracking-wide transition-all duration-300",
+                                "flex items-center gap-2 px-3 py-2 rounded-lg font-orbitron text-xs tracking-wide transition-all duration-300",
                                 isActive(item.path)
                                     ? "bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/30 shadow-[0_0_10px_rgb(var(--accent-primary)/0.2)]"
                                     : "text-gray-400 hover:theme-text hover:bg-theme-text/5"
