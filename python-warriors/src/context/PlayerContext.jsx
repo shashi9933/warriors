@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { CLASSES, WEAPONS } from '../data/gameData';
+import { ACHIEVEMENTS } from '../data/achievements';
 
 const PlayerContext = createContext();
 
@@ -110,12 +111,21 @@ const playerReducer = (state, action) => {
             };
 
         case 'UPDATE_STATS':
+            // Recursive merge for stats
+            const updatedStats = { ...state.stats };
+            Object.keys(action.payload).forEach(key => {
+                updatedStats[key] = (updatedStats[key] || 0) + action.payload[key];
+            });
             return {
                 ...state,
-                stats: {
-                    ...state.stats,
-                    ...action.payload
-                }
+                stats: updatedStats
+            };
+
+        case 'UNLOCK_ACHIEVEMENT':
+            if (state.achievements?.includes(action.payload)) return state;
+            return {
+                ...state,
+                achievements: [...(state.achievements || []), action.payload]
             };
 
         default:
@@ -124,6 +134,7 @@ const playerReducer = (state, action) => {
 };
 
 export const PlayerProvider = ({ children }) => {
+    // State
     const [playerData, dispatch] = useReducer(playerReducer, initialState, () => {
         // Load from local storage
         const saved = localStorage.getItem('pythonWarriors_save');
@@ -135,6 +146,20 @@ export const PlayerProvider = ({ children }) => {
         localStorage.setItem('pythonWarriors_save', JSON.stringify(playerData));
     }, [playerData]);
 
+    // Check Achievements on stats update
+    useEffect(() => {
+        if (!playerData.stats) return;
+
+        ACHIEVEMENTS.forEach(ach => {
+            if (!playerData.achievements?.includes(ach.id)) {
+                if (ach.condition(playerData.stats)) {
+                    dispatch({ type: 'UNLOCK_ACHIEVEMENT', payload: ach.id });
+                    // Optional: Add notification here or handled by UI observing state
+                }
+            }
+        });
+    }, [playerData.stats, playerData.achievements]);
+
     // Helper Actions
     const gainXP = (amount) => dispatch({ type: 'GAIN_XP', payload: amount });
     const takeDamage = (amount) => dispatch({ type: 'UPDATE_HP', payload: playerData.hp - amount });
@@ -144,6 +169,11 @@ export const PlayerProvider = ({ children }) => {
     const equipWeapon = (weapon) => dispatch({ type: 'EQUIP_WEAPON', payload: weapon });
     const addItem = (item) => dispatch({ type: 'ADD_ITEM', payload: item });
     const spendSkillPoint = (skillType) => dispatch({ type: 'SPEND_SKILL', payload: skillType });
+    const unlockAdvancedSkill = (skillId) => dispatch({ type: 'UNLOCK_ADVANCED_SKILL', payload: skillId });
+
+    // Stats & Achievements
+    const updateStats = (newStats) => dispatch({ type: 'UPDATE_STATS', payload: newStats });
+    const unlockAchievement = (id) => dispatch({ type: 'UNLOCK_ACHIEVEMENT', payload: id });
 
     return (
         <PlayerContext.Provider value={{
@@ -158,7 +188,9 @@ export const PlayerProvider = ({ children }) => {
                 equipWeapon,
                 addItem,
                 spendSkillPoint,
-                unlockAdvancedSkill: (skillId) => dispatch({ type: 'UNLOCK_ADVANCED_SKILL', payload: skillId })
+                unlockAdvancedSkill,
+                updateStats,
+                unlockAchievement
             }
         }}>
             {children}

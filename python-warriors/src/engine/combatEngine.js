@@ -63,6 +63,21 @@ export const calculateDamage = (player, boss, codeResult) => {
         patternMsg += " [Loop Mastery +20%]";
     }
 
+    if (player.advancedSkills?.debug_suite) {
+        // Base Analysis Bonus
+        baseDamage += 5; // Flat detection bonus
+
+        // Weakness Exploits
+        if (boss.id === 'function_dragon' && codeResult.patterns?.hasRecursion) {
+            patternBonus += 0.25;
+            patternMsg += " [WEAKNESS EXPLOITED: RECURSION]";
+        }
+        if (boss.id === 'memory_leech' && codeResult.patterns?.hasListComp) {
+            patternBonus += 0.25;
+            patternMsg += " [WEAKNESS EXPLOITED: LIST COMP]";
+        }
+    }
+
     const totalDamage = Math.floor(baseDamage * rageMultiplier * critMultiplier * patternBonus);
 
     return {

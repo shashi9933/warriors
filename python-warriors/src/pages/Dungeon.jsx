@@ -39,7 +39,7 @@ const StageTracker = ({ stages, currentStage }) => {
                         </motion.div>
 
                         {/* Tooltip */}
-                        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-gray-400 bg-black/80 px-2 py-1 rounded border border-white/10">
+                        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-gray-400 bg-black/80 px-2 py-1 rounded border border-theme-text/10">
                             {stage.title}
                         </div>
                     </div>
@@ -81,7 +81,7 @@ const LootCard = ({ item, delay }) => (
             <Gift size={24} className="text-purple-300" />
         </div>
         <span className="text-xs font-orbitron text-purple-300 mb-1">ITEM FOUND</span>
-        <span className="text-sm font-bold text-white text-center leading-tight">{item.name}</span>
+        <span className="text-sm font-bold theme-text text-center leading-tight">{item.name}</span>
         <span className="text-[10px] text-gray-500 mt-2">{item.rarity}</span>
     </motion.div>
 );
@@ -161,19 +161,19 @@ const Dungeon = () => {
                         >
                             <Trophy size={64} className="text-yellow-400" />
                         </motion.div>
-                        <h1 className="text-5xl font-orbitron text-white font-bold drop-shadow-lg">SYSTEM CORE SECURED</h1>
+                        <h1 className="text-5xl font-orbitron theme-text font-bold drop-shadow-lg">SYSTEM CORE SECURED</h1>
                         <p className="text-gray-400 text-lg">All encryption layers bypassed successfully.</p>
                     </div>
 
-                    <div className="bg-glass-panel p-8 rounded-2xl border border-white/10 w-full max-w-2xl bg-black/40 backdrop-blur-md">
-                        <div className="flex justify-between items-center mb-8 pb-4 border-b border-white/10">
+                    <div className="bg-glass-panel p-8 rounded-2xl border border-theme-text/10 w-full max-w-2xl bg-black/40 backdrop-blur-md">
+                        <div className="flex justify-between items-center mb-8 pb-4 border-b border-theme-text/10">
                             <div>
                                 <h3 className="text-sm text-gray-400 mb-1">TOTAL XP ACQUIRED</h3>
                                 <div className="text-3xl font-mono text-cyan-400 font-bold">+{LEVELS.reduce((a, b) => a + b.xpReward, 0)} XP</div>
                             </div>
                             <div>
                                 <h3 className="text-sm text-gray-400 mb-1">STAGES</h3>
-                                <div className="text-3xl font-mono text-white font-bold">{LEVELS.length}/{LEVELS.length}</div>
+                                <div className="text-3xl font-mono theme-text font-bold">{LEVELS.length}/{LEVELS.length}</div>
                             </div>
                         </div>
 
@@ -210,7 +210,7 @@ const Dungeon = () => {
                 <div className="glass-panel p-6 pb-2">
                     <div className="flex justify-between items-start mb-6">
                         <div>
-                            <h2 className="text-2xl font-orbitron text-white mb-1">{currentLevel.title}</h2>
+                            <h2 className="text-2xl font-orbitron theme-text mb-1">{currentLevel.title}</h2>
                             <div className="text-sm text-gray-400 flex items-center gap-2">
                                 <Code size={14} className="text-cyan-400" />
                                 <span className="font-mono text-xs uppercase tracking-widest">Protocol {currentLevel.stage}</span>

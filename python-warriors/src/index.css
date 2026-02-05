@@ -14,6 +14,31 @@
     /* #ff00ff */
     --glass-border: 255 255 255;
     --glass-alpha: 0.1;
+    --panel-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  }
+
+  .light-mode {
+    --bg-primary: 230 250 235;
+    /* Mint White */
+    --text-primary: 0 10 5;
+    /* Practically Black */
+    --accent-primary: 0 120 40;
+    /* Strong Green */
+    --accent-secondary: 120 20 120;
+    /* Deep Purple */
+    --panel-shadow: 0 10px 25px -5px rgba(0, 50, 20, 0.15), 0 5px 10px -2px rgba(0, 0, 0, 0.1);
+  }
+
+  .void-neon {
+    --bg-primary: 0 0 0;
+    /* Pure Black */
+    --text-primary: 255 255 255;
+    --accent-primary: 0 255 102;
+    /* Neon Green */
+    --accent-secondary: 255 0 255;
+    /* Neon Magenta */
+    --panel-shadow: 0 0 15px rgba(0, 255, 102, 0.15);
+    /* Neon Glow */
   }
 
   .neon-cyber {
@@ -21,6 +46,7 @@
     --text-primary: 255 255 255;
     --accent-primary: 0 243 255;
     --accent-secondary: 255 0 255;
+    --panel-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
   }
 
   .robotic {
@@ -31,6 +57,7 @@
     /* Steel Blue */
     --accent-secondary: 255 215 0;
     /* Gold wire */
+    --panel-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
   }
 
   .terminal {
@@ -42,6 +69,8 @@
     --accent-secondary: 50 150 50;
     font-family: 'Courier New', monospace;
     /* Override font */
+    --panel-shadow: none;
+    border: 1px solid #0f0;
   }
 
   .cyberpunk {
@@ -53,6 +82,7 @@
     /* Glitch Red */
     --accent-secondary: 0 240 255;
     /* Blue */
+    --panel-shadow: 2px 2px 0px rgba(255, 0, 60, 0.5);
   }
 
   body {
@@ -80,7 +110,7 @@
     border: 1px solid rgb(var(--accent-primary) / 0.3);
     border-radius: 0.75rem;
     /* rounded-xl */
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--panel-shadow);
   }
 
   .btn-primary {

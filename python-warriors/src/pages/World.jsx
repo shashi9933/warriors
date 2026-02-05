@@ -160,7 +160,7 @@ const World = () => {
                             </motion.div>
 
                             {/* Label under node */}
-                            <div className={`mt-4 font-orbitron text-xs font-bold tracking-widest px-3 py-1 bg-black/80 border border-white/10 rounded-full transition-colors ${node.id === activeNode.id ? node.color : 'text-gray-600'}`}>
+                            <div className={`mt-4 font-orbitron text-xs font-bold tracking-widest px-3 py-1 bg-black/80 border border-theme-text/10 rounded-full transition-colors ${node.id === activeNode.id ? node.color : 'text-gray-600'}`}>
                                 {node.label}
                             </div>
                         </div>
@@ -173,7 +173,7 @@ const World = () => {
 
                 {/* Right: Sector Analysis Panel */}
                 <div className="w-80 glass-panel p-6 flex flex-col relative overflow-hidden shrink-0">
-                    <h3 className="font-orbitron text-white text-lg flex items-center gap-2 mb-6 border-b border-white/10 pb-4">
+                    <h3 className="font-orbitron theme-text text-lg flex items-center gap-2 mb-6 border-b border-theme-text/10 pb-4">
                         <Globe size={18} className="text-cyan-400" /> SECTOR ANALYSIS
                     </h3>
 

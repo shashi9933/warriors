@@ -8,7 +8,7 @@ export const initPyodide = async () => {
 
     if (!pyodideLoadingPromise) {
         pyodideLoadingPromise = loadPyodide({
-            indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/"
+            indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.1/full/"
         }).then(async (pyodide) => {
             // Pre-load common packages if needed here
             // await pyodide.loadPackage("micropip"); 

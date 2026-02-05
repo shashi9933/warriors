@@ -133,7 +133,7 @@ const Home = () => {
                                 transition={{ delay: 0.5 }}
                                 className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed font-light"
                             >
-                                <b className="text-white">Code is your weapon.</b> Logic is your shield. <br />
+                                <b className="theme-text">Code is your weapon.</b> Logic is your shield. <br />
                                 Hack the multiverse in this <span className="text-cyan-300 font-bold bg-cyan-900/10 px-2 py-1 rounded">Agentic Coding RPG</span>.
                             </motion.p>
 
@@ -165,7 +165,7 @@ const Home = () => {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 1 }}
-                                className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-24 pt-12 border-t border-white/5"
+                                className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-24 pt-12 border-t border-theme-text/5"
                             >
                                 {[
                                     { icon: Terminal, title: "REAL PYTHON", desc: "Execute code via Pyodide Engine", color: "text-green-400" },

@@ -12,6 +12,8 @@ export default {
         'neon-magenta': 'rgb(var(--accent-secondary) / <alpha-value>)',
         'glass-bg': 'rgb(var(--bg-primary) / 0.7)',
         'glass-border': 'rgb(var(--accent-primary) / 0.3)',
+        'theme-text': 'rgb(var(--text-primary) / <alpha-value>)',
+        'theme-bg': 'rgb(var(--bg-primary) / <alpha-value>)',
       },
       fontFamily: {
         orbitron: ['Orbitron', 'sans-serif'],

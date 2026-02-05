@@ -8,6 +8,8 @@ export const THEMES = {
     ROBOTIC: 'robotic',
     TERMINAL: 'terminal',
     CYBERPUNK: 'cyberpunk',
+    LIGHT: 'light-mode',
+    VOID_NEON: 'void-neon',
 };
 
 export const ThemeProvider = ({ children }) => {
