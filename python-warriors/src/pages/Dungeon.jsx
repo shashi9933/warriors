@@ -4,110 +4,71 @@ import Button from '../components/ui/Button';
 import { usePlayer } from '../context/PlayerContext';
 import { LEVELS } from '../data/gameData';
 import { verifyStageSolution, startDungeonRun, progressStage } from '../engine/dungeonEngine';
-import { Play, Skull, Trophy, ArrowRight, Code, Terminal, CheckCircle, Lock, Shield, Gift } from 'lucide-react';
+import { Play, Skull, Trophy, Code, Terminal, Lock, Shield, Gift, AlertTriangle, Zap, Server } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSound } from '../context/SoundContext';
 
-// --- Sub-components ---
+// --- Visual Components ---
 
-const StageTracker = ({ stages, currentStage }) => {
+const SecurityNode = ({ active, completed, index }) => (
+    <div className={`flex flex-col items-center gap-2 relative ${active ? 'scale-110' : 'scale-100 opacity-50'} transition-all duration-300`}>
+        <div className={`w-3 h-3 rounded-full ${completed ? 'bg-green-500 shadow-[0_0_10px_#22c55e]' : active ? 'bg-amber-500 animate-pulse shadow-[0_0_15px_#f59e0b]' : 'bg-gray-700'}`} />
+        <div className="absolute top-4 text-[10px] font-mono text-gray-500 whitespace-nowrap">LAYER {index + 1}</div>
+    </div>
+);
+
+const TargetVisual = ({ stage, isExecuting, isDamaged }) => {
     return (
-        <div className="flex items-center justify-between w-full max-w-2xl mx-auto mb-6 relative">
-            {/* Connecting Line */}
-            <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-800 -z-10 rounded-full" />
-            <div
-                className="absolute top-1/2 left-0 h-1 bg-gradient-to-r from-purple-600 to-cyan-500 -z-10 rounded-full transition-all duration-500"
-                style={{ width: `${(currentStage / (stages.length - 1)) * 100}%` }}
-            />
+        <div className="relative w-full h-64 flex items-center justify-center">
+            {/* Holographic Projection Base */}
+            <div className="absolute bottom-0 w-32 h-8 bg-cyan-500/20 rounded-[100%] blur-xl animate-pulse" />
 
-            {stages.map((stage, idx) => {
-                const isCompleted = idx < currentStage;
-                const isCurrent = idx === currentStage;
-                const isLocked = idx > currentStage;
+            {/* The Target Entity */}
+            <motion.div
+                animate={isExecuting ? { scale: [1, 0.95, 1.05, 1], rotate: [0, -2, 2, 0], filter: ["hue-rotate(0deg)", "hue-rotate(90deg)", "hue-rotate(0deg)"] } : {}}
+                transition={{ duration: 0.5, repeat: isExecuting ? Infinity : 0 }}
+                className="relative z-10"
+            >
+                <div className={`relative p-8 rounded-full border-4 ${isDamaged ? 'border-red-500 shadow-[0_0_50px_#ef4444]' : 'border-cyan-500/50 shadow-[0_0_30px_#06b6d4]'} bg-black/80 backdrop-blur-md transition-all duration-300`}>
+                    <Lock size={64} className={`${isDamaged ? 'text-red-500' : 'text-cyan-400'}`} />
 
-                return (
-                    <div key={idx} className="relative group">
-                        <motion.div
-                            className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors duration-300 z-10 bg-[#0a0a0a]
-                                ${isCompleted ? 'border-green-500 text-green-500 shadow-[0_0_10px_rgba(34,197,94,0.4)]' : ''}
-                                ${isCurrent ? 'border-cyan-400 text-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.6)] scale-110' : ''}
-                                ${isLocked ? 'border-gray-700 text-gray-700' : ''}
-                            `}
-                            initial={{ scale: 0.8 }}
-                            animate={{ scale: isCurrent ? 1.2 : 1 }}
-                        >
-                            {isCompleted ? <CheckCircle size={16} /> : isLocked ? <Lock size={14} /> : <span className="font-orbitron font-bold text-sm">{idx + 1}</span>}
-                        </motion.div>
+                    {/* Rotating Rings */}
+                    <div className="absolute inset-[-20px] border border-dashed border-cyan-500/30 rounded-full animate-spin-slow" />
+                    <div className="absolute inset-[-40px] border border-dotted border-cyan-500/20 rounded-full animate-reverse-spin" />
+                </div>
+            </motion.div>
 
-                        {/* Tooltip */}
-                        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-gray-400 bg-black/80 px-2 py-1 rounded border border-theme-text/10">
-                            {stage.title}
-                        </div>
-                    </div>
-                );
-            })}
+            {/* Scanning Lines */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/10 to-transparent h-[10%] w-full animate-scan pointer-events-none" />
         </div>
     );
 };
-
-const TypewriterText = ({ text }) => {
-    const [displayedText, setDisplayedText] = useState("");
-
-    useEffect(() => {
-        setDisplayedText("");
-        let i = 0;
-        const speed = 30;
-        const interval = setInterval(() => {
-            if (i < text.length) {
-                setDisplayedText((prev) => prev + text.charAt(i));
-                i++;
-            } else {
-                clearInterval(interval);
-            }
-        }, speed);
-        return () => clearInterval(interval);
-    }, [text]);
-
-    return <span className="font-mono text-cyan-300">{displayedText}<span className="animate-pulse">_</span></span>;
-};
-
-const LootCard = ({ item, delay }) => (
-    <motion.div
-        initial={{ opacity: 0, y: 20, scale: 0.8 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ delay: delay * 0.2, type: 'spring' }}
-        className="flex flex-col items-center bg-black/60 p-4 rounded-xl border border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.2)] w-32"
-    >
-        <div className="w-16 h-16 bg-purple-900/20 rounded-full flex items-center justify-center mb-3 animate-bounce-slow">
-            <Gift size={24} className="text-purple-300" />
-        </div>
-        <span className="text-xs font-orbitron text-purple-300 mb-1">ITEM FOUND</span>
-        <span className="text-sm font-bold theme-text text-center leading-tight">{item.name}</span>
-        <span className="text-[10px] text-gray-500 mt-2">{item.rarity}</span>
-    </motion.div>
-);
 
 // --- Main Component ---
 
 const Dungeon = () => {
     const { playerData, actions } = usePlayer();
+    const { playSFX } = useSound();
     const [runState, setRunState] = useState(startDungeonRun());
     const [code, setCode] = useState("");
-    const [output, setOutput] = useState("Initializing execution environment...");
+    const [output, setOutput] = useState("Initializing breach protocol...");
     const [isExecuting, setIsExecuting] = useState(false);
+    const [shake, setShake] = useState(false); // To visually damage the target
 
     const currentLevel = LEVELS[runState.currentStageIndex];
 
-    // Initialize code pattern when level changes
+    // Initialize code
     useEffect(() => {
         if (currentLevel) {
             setCode(currentLevel.starterCode || "");
-            setOutput("Ready for input...");
+            setOutput("Target locked. Awaiting payload injection...");
         }
     }, [runState.currentStageIndex, currentLevel]);
 
     const handleExecute = async () => {
         setIsExecuting(true);
-        setOutput(">> Compiling solution...\n>> Running test cases...");
+        playSFX('LOADING');
+        setOutput(">> Injecting payload...\n>> Bypassing firewalls...");
 
         const result = await verifyStageSolution(code, currentLevel.stage);
 
@@ -115,6 +76,10 @@ const Dungeon = () => {
             setOutput(prev => prev + "\n" + (result.output || result.error));
 
             if (result.success) {
+                playSFX('SUCCESS');
+                setShake(true); // Visual hit
+                setTimeout(() => setShake(false), 500);
+
                 const xpReward = currentLevel.xpReward;
                 actions.gainXP(xpReward);
 
@@ -126,77 +91,25 @@ const Dungeon = () => {
                     }
                 }, 1500);
             } else {
+                playSFX('ERROR');
                 actions.takeDamage(10);
                 if (playerData.hp <= 10) {
                     setRunState(prev => ({ ...prev, isFailed: true }));
                 }
             }
             setIsExecuting(false);
-        }, 800); // Fake delay for dramatic effect
+        }, 1200);
     };
 
-    if (runState.isFailed || playerData.hp <= 0) {
+    if (runState.isComplete || runState.isFailed) {
+        // (Keeping the completion/failure screens mostly similar for now, focused on the main view)
         return (
             <PageLayout>
-                <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6 animate-in zoom-in duration-500">
-                    <Skull size={80} className="text-red-500 animate-pulse" />
-                    <h1 className="text-5xl font-orbitron text-red-500 font-bold">CRITICAL FAILURE</h1>
-                    <p className="text-gray-400 text-xl max-w-md">Runtime execution failed. Stack overflow detected.</p>
-                    <Button variant="danger" onClick={() => window.location.href = '/war-room'}>
-                        ABORT PROCESS
-                    </Button>
-                </div>
-            </PageLayout>
-        );
-    }
-
-    if (runState.isComplete) {
-        return (
-            <PageLayout>
-                <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-8 animate-in zoom-in duration-700">
-                    <div className="text-center space-y-4">
-                        <motion.div
-                            initial={{ scale: 0 }} animate={{ scale: 1 }}
-                            className="inline-block p-6 rounded-full bg-yellow-400/10 border border-yellow-400/30"
-                        >
-                            <Trophy size={64} className="text-yellow-400" />
-                        </motion.div>
-                        <h1 className="text-5xl font-orbitron theme-text font-bold drop-shadow-lg">SYSTEM CORE SECURED</h1>
-                        <p className="text-gray-400 text-lg">All encryption layers bypassed successfully.</p>
-                    </div>
-
-                    <div className="bg-glass-panel p-8 rounded-2xl border border-theme-text/10 w-full max-w-2xl bg-black/40 backdrop-blur-md">
-                        <div className="flex justify-between items-center mb-8 pb-4 border-b border-theme-text/10">
-                            <div>
-                                <h3 className="text-sm text-gray-400 mb-1">TOTAL XP ACQUIRED</h3>
-                                <div className="text-3xl font-mono text-cyan-400 font-bold">+{LEVELS.reduce((a, b) => a + b.xpReward, 0)} XP</div>
-                            </div>
-                            <div>
-                                <h3 className="text-sm text-gray-400 mb-1">STAGES</h3>
-                                <div className="text-3xl font-mono theme-text font-bold">{LEVELS.length}/{LEVELS.length}</div>
-                            </div>
-                        </div>
-
-                        {runState.rewards.loot.length > 0 && (
-                            <div>
-                                <h4 className="text-sm font-orbitron text-purple-400 mb-4 flex items-center gap-2">
-                                    <Gift size={16} /> REWARD CACHE OPENED
-                                </h4>
-                                <div className="flex gap-6 justify-center flex-wrap">
-                                    {runState.rewards.loot.map((item, i) => (
-                                        <LootCard key={i} item={item} delay={i} />
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    <Button variant="primary" onClick={() => {
-                        runState.rewards.loot.forEach(item => actions.addItem(item));
-                        window.location.href = '/war-room';
-                    }} className="px-12 py-4 text-lg">
-                        RETURN TO BASE
-                    </Button>
+                <div className="flex flex-col items-center justify-center min-h-[70vh]">
+                    <h1 className={`text-6xl font-black font-orbitron mb-4 ${runState.isComplete ? 'text-green-500' : 'text-red-500'}`}>
+                        {runState.isComplete ? 'SYSTEM BREACHED' : 'CONNECTION LOST'}
+                    </h1>
+                    <Button variant="primary" onClick={() => window.location.href = '/war-room'}>DISCONNECT</Button>
                 </div>
             </PageLayout>
         );
@@ -204,105 +117,127 @@ const Dungeon = () => {
 
     return (
         <PageLayout>
-            <div className="max-w-6xl mx-auto h-[calc(100vh-140px)] flex flex-col gap-6">
+            <div className="max-w-7xl mx-auto h-[calc(100vh-120px)] flex flex-col gap-4 p-2">
 
-                {/* Header / Progress */}
-                <div className="glass-panel p-6 pb-2">
-                    <div className="flex justify-between items-start mb-6">
-                        <div>
-                            <h2 className="text-2xl font-orbitron theme-text mb-1">{currentLevel.title}</h2>
-                            <div className="text-sm text-gray-400 flex items-center gap-2">
-                                <Code size={14} className="text-cyan-400" />
-                                <span className="font-mono text-xs uppercase tracking-widest">Protocol {currentLevel.stage}</span>
-                            </div>
+                {/* Top Bar: Progress & Status */}
+                <div className="glass-panel p-4 flex items-center justify-between bg-black/60 border-b border-white/10">
+                    <div className="flex items-center gap-4">
+                        <div className="bg-red-500/20 p-2 rounded border border-red-500/50 animate-pulse">
+                            <AlertTriangle size={20} className="text-red-500" />
                         </div>
-                        <div className="bg-purple-900/20 border border-purple-500/30 px-3 py-1 rounded text-xs text-purple-300 font-mono">
-                            REWARD: {currentLevel.xpReward} XP
+                        <div>
+                            <div className="text-xs text-red-500 font-mono tracking-widest">SECURITY ALERT</div>
+                            <div className="text-lg font-bold font-orbitron text-white">LEVEL {runState.currentStageIndex + 1} // {currentLevel.title.toUpperCase()}</div>
                         </div>
                     </div>
 
-                    <StageTracker stages={LEVELS} currentStage={runState.currentStageIndex} />
+                    {/* Layer Progress */}
+                    <div className="flex items-center gap-8">
+                        {LEVELS.map((_, i) => (
+                            <SecurityNode key={i} index={i} completed={i < runState.currentStageIndex} active={i === runState.currentStageIndex} />
+                        ))}
+                    </div>
+
+                    <div className="text-right">
+                        <div className="text-xs text-gray-400 font-mono">ENCRYPTION INTEGRITY</div>
+                        <div className="text-xl font-mono text-cyan-500 font-bold">100%</div>
+                    </div>
                 </div>
 
-                {/* Main Content Split */}
-                <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-0">
+                {/* Main Breach Interface */}
+                <div className="flex-1 grid grid-cols-12 gap-6 min-h-0">
 
-                    {/* Left: Briefing & Console */}
-                    <div className="flex flex-col gap-6">
-                        {/* Briefing Card */}
-                        <div className="glass-panel p-6 bg-blue-900/10 border-l-4 border-l-cyan-500 relative overflow-hidden">
-                            <div className="absolute top-2 right-2 opacity-10">
-                                <Shield size={100} />
+                    {/* Left Col: Target Visualization (4 cols) */}
+                    <div className="col-span-4 flex flex-col gap-4">
+                        {/* The Target */}
+                        <div className="flex-1 glass-panel relative flex flex-col items-center justify-center p-6 bg-gradient-to-b from-slate-900 to-black border border-cyan-500/20 overflow-hidden">
+                            <div className="absolute top-4 left-4 text-xs font-mono text-cyan-500 flex items-center gap-2">
+                                <Server size={14} /> HOST: 192.168.X.X
                             </div>
-                            <h3 className="text-cyan-400 font-orbitron text-sm mb-2 flex items-center gap-2">
-                                <Terminal size={14} /> MISSION OBJECTIVE
-                            </h3>
-                            <div className="text-lg leading-relaxed text-gray-200">
-                                <TypewriterText text={currentLevel.challenge} />
-                            </div>
-                            <p className="mt-4 text-sm text-gray-500 italic">"{currentLevel.description}"</p>
-                        </div>
 
-                        {/* Console Output */}
-                        <div className="glass-panel p-0 flex-1 flex flex-col overflow-hidden border-2 border-gray-800 bg-[#0a0a0a]">
-                            <div className="bg-gray-900/80 p-2 border-b border-white/5 flex items-center justify-between px-4">
-                                <span className="text-xs font-mono text-gray-400 flex items-center gap-2"><Terminal size={14} /> TERMINAL_OUTPUT</span>
-                                <div className="flex gap-1">
-                                    <div className="w-2 h-2 rounded-full bg-red-500/50" />
-                                    <div className="w-2 h-2 rounded-full bg-yellow-500/50" />
-                                    <div className="w-2 h-2 rounded-full bg-green-500/50" />
+                            <TargetVisual stage={runState.currentStageIndex} isExecuting={isExecuting} isDamaged={shake} />
+
+                            <div className="mt-8 text-center space-y-2 relative z-10">
+                                <div className="text-xs text-gray-400 font-mono uppercase">Decryption Challenge</div>
+                                <div className="text-white font-mono text-sm bg-black/50 p-3 rounded border border-white/10">
+                                    "{currentLevel.challenge}"
                                 </div>
                             </div>
-                            <div className="flex-1 p-4 font-mono text-sm text-gray-300 overflow-y-auto whitespace-pre-wrap font-fira-code selection:bg-white/20">
-                                {output}
+                        </div>
+
+                        {/* Terminal Log */}
+                        <div className="h-48 glass-panel bg-black border-t-4 border-t-cyan-500 p-0 flex flex-col font-mono text-xs">
+                            <div className="bg-cyan-900/20 p-2 text-cyan-400 flex justify-between">
+                                <span>TERMINAL.exe</span>
+                                <span className={isExecuting ? "animate-pulse" : ""}>{isExecuting ? "● USR_BIN_PYTH" : "● IDLE"}</span>
+                            </div>
+                            <div className="flex-1 p-3 text-green-500/80 overflow-y-auto font-fira-code leading-relaxed">
+                                {output.split('\n').map((line, i) => (
+                                    <div key={i}>{line}</div>
+                                ))}
+                                {isExecuting && <div className="animate-pulse">_</div>}
                             </div>
                         </div>
                     </div>
 
-                    {/* Right: Editor */}
-                    <div className="glass-panel p-0 flex flex-col overflow-hidden ring-1 ring-purple-500/30 shadow-2xl h-full">
-                        <div className="bg-[#151515] p-3 border-b border-white/5 flex justify-between items-center px-4 shrink-0">
-                            <span className="text-xs font-mono text-gray-400 flex items-center gap-2"><Code size={14} /> solution.py</span>
-                            <span className="text-[10px] text-gray-600 font-mono">UTF-8</span>
+                    {/* Right Col: Code Interface (8 cols) */}
+                    <div className="col-span-8 flex flex-col glass-panel p-0 overflow-hidden border border-white/10 relative">
+                        {/* Editor Header */}
+                        <div className="bg-[#1e1e1e] p-3 flex justify-between items-center border-b border-black/50">
+                            <div className="flex gap-2">
+                                <div className="w-3 h-3 rounded-full bg-red-500/50" />
+                                <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
+                                <div className="w-3 h-3 rounded-full bg-green-500/50" />
+                            </div>
+                            <div className="text-gray-500 font-mono text-xs">breach_script.py</div>
                         </div>
 
-                        <div className="flex-1 flex bg-[#0d0d0d] relative min-h-0">
-                            {/* Line Gutter */}
-                            <div className="w-10 bg-[#111] text-gray-700 text-right pr-2 py-4 select-none border-r border-white/5 font-mono text-sm leading-relaxed overflow-hidden">
-                                {[...Array(15)].map((_, i) => <div key={i}>{i + 1}</div>)}
+                        {/* Editor Area */}
+                        <div className="flex-1 bg-[#1a1a1a] relative flex">
+                            {/* Line Numbers */}
+                            <div className="w-12 bg-[#151515] text-gray-700 text-right pr-3 pt-4 font-mono text-sm leading-6 border-r border-white/5 select-none">
+                                {[...Array(20)].map((_, i) => <div key={i}>{i + 1}</div>)}
                             </div>
 
+                            {/* Text Area */}
                             <textarea
-                                className="flex-1 bg-transparent text-gray-200 font-mono p-4 resize-none focus:outline-none leading-relaxed h-full overflow-auto"
                                 value={code}
                                 onChange={(e) => setCode(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                                        handleExecute();
-                                    }
-                                }}
+                                className="flex-1 bg-transparent text-gray-200 font-mono text-sm p-4 resize-none focus:outline-none leading-6 font-fira-code cursor-text selection:bg-cyan-500/30"
                                 spellCheck="false"
-                                placeholder="# Write your python code here..."
+                                placeholder="# Inject Python code here..."
                             />
-                        </div>
 
-                        <div className="p-4 bg-[#151515] border-t border-white/5 flex justify-between items-center shrink-0">
-                            <div className="text-xs text-gray-500 font-mono">
-                                {isExecuting ? 'Status: COMPILING...' : 'CTRL + ENTER to Execute'}
+                            {/* Execute Overlay Button (Floating) */}
+                            <div className="absolute bottom-6 right-6">
+                                <Button
+                                    variant="accent"
+                                    className={`h-14 w-14 rounded-full shadow-[0_0_20px_purple] flex items-center justify-center transition-all ${isExecuting ? 'scale-90 opacity-50' : 'hover:scale-110'}`}
+                                    onClick={handleExecute}
+                                    disabled={isExecuting}
+                                >
+                                    {isExecuting ? <Zap className="animate-spin" /> : <Play fill="currentColor" className="ml-1" />}
+                                </Button>
                             </div>
-                            <Button
-                                variant="accent"
-                                onClick={handleExecute}
-                                disabled={isExecuting}
-                                className="flex items-center gap-2 px-6 shadow-lg shadow-purple-500/20"
-                            >
-                                {isExecuting ? 'PROCESSING...' : <>EXECUTE <Play size={16} /></>}
-                            </Button>
                         </div>
                     </div>
-                </div>
 
+                </div>
             </div>
+
+            <style jsx>{`
+                @keyframes scan {
+                    0% { top: -10%; opacity: 0; }
+                    50% { opacity: 1; }
+                    100% { top: 110%; opacity: 0; }
+                }
+                .animate-scan {
+                    animation: scan 3s linear infinite;
+                }
+                .animate-reverse-spin {
+                    animation: spin 10s linear infinite reverse;
+                }
+            `}</style>
         </PageLayout>
     );
 };
