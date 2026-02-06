@@ -194,7 +194,7 @@ const Home = () => {
                 </AnimatePresence>
             </div>
 
-            <style jsx>{`
+            <style>{`
                 .clip-menu-item {
                     clip-path: polygon(
                         0 0, 

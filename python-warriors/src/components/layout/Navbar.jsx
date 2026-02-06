@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Sword, Shield, Skull, Home, Volume2, VolumeX, Settings, Music, Zap, Radio } from 'lucide-react';
+import { Menu, X, Sword, Shield, Skull, Home, Volume2, VolumeX, Settings, Music, Zap, Radio, Map as MapIcon, BookOpen } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useTheme } from '../../context/ThemeContext';
 import { useSound } from '../../context/SoundContext';
@@ -89,10 +89,10 @@ const Navbar = () => {
 
     const navItems = [
         { name: 'Home', path: '/', icon: <Home size={16} /> },
+        { name: 'Campaign', path: '/world', icon: <MapIcon size={16} /> },
+        { name: 'Academy', path: '/academy', icon: <BookOpen size={16} /> },
+        { name: 'Arena', path: '/battle-arena', icon: <Sword size={16} /> },
         { name: 'War Room', path: '/war-room', icon: <Shield size={16} /> },
-        { name: 'Battle Arena', path: '/battle-arena', icon: <Sword size={16} /> },
-        { name: 'Dungeon', path: '/dungeon', icon: <Skull size={16} /> },
-        { name: 'World Map', path: '/world', icon: <Home size={16} /> },
     ];
 
     const themes = [
@@ -107,7 +107,7 @@ const Navbar = () => {
     const isActive = (path) => location.pathname === path;
 
     return (
-        <nav className="fixed top-0 left-0 right-0 z-50 h-[50px] bg-deep-space/90 backdrop-blur-md border-b border-glass-border flex items-center">
+        <nav className="fixed top-0 left-0 right-0 z-[100] h-[50px] bg-[#050510] border-b border-white/10 flex items-center shadow-lg">
             <div className="w-full max-w-7xl mx-auto px-4 flex justify-between items-center">
                 {/* Logo */}
                 <Link to="/" className="flex items-center gap-2 group">
@@ -201,22 +201,70 @@ const Navbar = () => {
 
             {/* Mobile Navigation */}
             {isOpen && (
-                <div className="md:hidden absolute top-[50px] left-0 right-0 bg-deep-space/95 backdrop-blur-xl border-b border-glass-border animate-in slide-in-from-top-2">
+                <div className="md:hidden absolute top-[50px] left-0 right-0 bg-[#050510] border-b border-white/20 animate-in slide-in-from-top-2 shadow-2xl z-50">
                     <div className="flex flex-col p-4 gap-2">
+                        {/* User Info & Controls Row */}
+                        <div className="flex justify-between items-center pb-4 mb-2 border-b border-white/10">
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded">
+                                <span className={`w-2 h-2 rounded-full ${getRank(playerData.level).color.replace('text-', 'bg-')}`} />
+                                <span className="text-xs font-orbitron text-gray-300">
+                                    Lvl {playerData.level}
+                                </span>
+                            </div>
+
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setSoundMenuOpen(!soundMenuOpen)}
+                                    className={`w-8 h-8 rounded border flex items-center justify-center ${bgmEnabled ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500' : 'bg-black text-gray-400 border-white/20'}`}
+                                >
+                                    {bgmEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
+                                </button>
+                                <button
+                                    onClick={() => setThemeMenuOpen(!themeMenuOpen)}
+                                    className="w-8 h-8 rounded border border-white/20 bg-black flex items-center justify-center"
+                                >
+                                    <div className={`w-3 h-3 rounded-full ${themes.find(t => t.id === currentTheme)?.color || 'bg-neon-cyan'}`} />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Sound Panel Mobile */}
+                        {soundMenuOpen && (
+                            <div className="mb-4 bg-black/50 p-4 rounded border border-white/10">
+                                <SoundPanel onClose={() => setSoundMenuOpen(false)} />
+                            </div>
+                        )}
+
+                        {/* Theme Panel Mobile */}
+                        {themeMenuOpen && (
+                            <div className="grid grid-cols-2 gap-2 mb-4 bg-black/50 p-4 rounded border border-white/10">
+                                {themes.map(t => (
+                                    <button
+                                        key={t.id}
+                                        onClick={() => { toggleTheme(t.id); setThemeMenuOpen(false); }}
+                                        className={`p-2 text-[10px] font-orbitron flex items-center gap-2 rounded border ${currentTheme === t.id ? 'bg-cyan-900/40 text-cyan-400 border-cyan-500' : 'bg-black text-gray-400 border-white/10'}`}
+                                    >
+                                        <div className={`w-2 h-2 rounded-full ${t.color}`} />
+                                        {t.name}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
                         {navItems.map((item) => (
                             <Link
                                 key={item.path}
                                 to={item.path}
                                 onClick={() => setIsOpen(false)}
                                 className={clsx(
-                                    "flex items-center gap-3 px-4 py-3 rounded-lg font-orbitron text-sm transition-all",
+                                    "flex items-center gap-3 px-4 py-4 rounded-lg font-orbitron text-sm transition-all border",
                                     isActive(item.path)
-                                        ? "bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30"
-                                        : "text-gray-400 hover:text-white hover:bg-white/5"
+                                        ? "bg-neon-cyan/20 text-neon-cyan border-neon-cyan/30 shadow-[0_0_10px_rgba(6,182,212,0.1)]"
+                                        : "bg-black/40 text-gray-400 border-white/5 hover:bg-white/5 hover:text-white"
                                 )}
                             >
                                 {item.icon}
-                                {item.name}
+                                {item.name.toUpperCase()}
                             </Link>
                         ))}
                     </div>

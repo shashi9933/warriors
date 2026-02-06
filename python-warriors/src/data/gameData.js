@@ -85,6 +85,28 @@ export const BOSSES = {
             { threshold: 50, name: "Siphon", damageMult: 1, message: "The Leech siphons your memory! (Focus Drained)" },
             { threshold: 0, name: "Overflow", damageMult: 3, message: "Use List Comprehension to purge it!" }
         ]
+    },
+    array_golem: {
+        id: "array_golem",
+        name: "Array Golem",
+        hp: 800,
+        maxHp: 800,
+        damage: 15,
+        description: "A construct made of rigid data blocks.",
+        mechanic: "Immune to single strikes. Needs multi-target loops.",
+        phases: [
+            { threshold: 60, name: "Fragment", damageMult: 1.2, message: " The Golem shatters into smaller chunks!" }
+        ]
+    },
+    syntax_spider: {
+        id: "syntax_spider",
+        name: "Syntax Spider",
+        hp: 200,
+        maxHp: 200,
+        damage: 25,
+        description: "Fast and deadly. Wraps you in error logs.",
+        mechanic: "High dodge chance. Use precise syntax to hit.",
+        phases: []
     }
 };
 
