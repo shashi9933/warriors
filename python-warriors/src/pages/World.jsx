@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sword, Shield, Skull, Home, MapPin, Globe, Signal, Zap, Lock, Terminal, Box, Cpu, Network, Layers, Crown } from 'lucide-react';
 import { useSound } from '../context/SoundContext';
 import Button from '../components/ui/Button';
+import TutorialModal from '../components/ui/TutorialModal';
 
 const NODES = [
     {
@@ -136,10 +137,30 @@ const World = () => {
     const { playSFX } = useSound();
     const [activeNode, setActiveNode] = useState(NODES[0]);
 
+    // --- Tutorial ---
+    const tutorialSlides = [
+        {
+            title: "WORLD MAP",
+            description: "Select a mission to begin. Use the Arrow Keys or Click to navigate the node network.",
+            icon: Globe,
+        },
+        {
+            title: "MISSION TYPES",
+            description: "Different nodes offer different challenges: Combat, Logic Puzzles, or Dungeons.",
+            icon: Zap,
+        },
+        {
+            title: "PROGRESSION",
+            description: "Complete missions to unlock new sectors and gain XP. Access the War Room to upgrade your gear.",
+            icon: MapPin,
+        }
+    ];
+
     return (
         <PageLayout>
+            <TutorialModal tutorialId="world_map" slides={tutorialSlides} />
 
-            <div className="h-[calc(100vh-64px)] md:h-[calc(100vh-140px)] flex flex-col md:flex-row gap-4 md:gap-6 relative">
+            <div className="flex-1 w-full flex flex-col md:flex-row gap-6 relative overflow-hidden h-[calc(100vh-100px)]">
 
                 {/* Left: 3D Map View */}
                 <div className="h-[50vh] md:h-auto md:flex-1 glass-panel p-0 relative overflow-hidden group perspective-[1200px] bg-black/60 shrink-0">

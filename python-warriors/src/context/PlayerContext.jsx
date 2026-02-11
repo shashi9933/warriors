@@ -6,6 +6,7 @@ const PlayerContext = createContext();
 
 const initialState = {
     // Identity
+    name: null,
     level: 1,
     xp: 0,
     maxXp: 1000,
@@ -47,12 +48,20 @@ const initialState = {
 // Reducer for state updates
 const playerReducer = (state, action) => {
     switch (action.type) {
+        case 'SET_IDENTITY':
+            return {
+                ...state,
+                name: action.payload.name,
+                classType: action.payload.classType
+            };
+
         case 'LOAD_GAME':
             return {
                 ...state,
                 ...action.payload,
                 // Ensure new state shape exists if loading old save
-                advancedSkills: action.payload.advancedSkills || initialState.advancedSkills
+                advancedSkills: action.payload.advancedSkills || initialState.advancedSkills,
+                name: action.payload.name || null
             };
 
         case 'GAIN_XP':
@@ -174,6 +183,7 @@ export const PlayerProvider = ({ children }) => {
     // Stats & Achievements
     const updateStats = (newStats) => dispatch({ type: 'UPDATE_STATS', payload: newStats });
     const unlockAchievement = (id) => dispatch({ type: 'UNLOCK_ACHIEVEMENT', payload: id });
+    const setIdentity = (name, classType) => dispatch({ type: 'SET_IDENTITY', payload: { name, classType } });
 
     return (
         <PlayerContext.Provider value={{
@@ -190,7 +200,8 @@ export const PlayerProvider = ({ children }) => {
                 spendSkillPoint,
                 unlockAdvancedSkill,
                 updateStats,
-                unlockAchievement
+                unlockAchievement,
+                setIdentity
             }
         }}>
             {children}

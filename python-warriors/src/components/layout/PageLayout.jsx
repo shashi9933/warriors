@@ -11,7 +11,7 @@ const PageLayout = ({ children }) => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className="pt-20 px-4 pb-12 max-w-7xl mx-auto"
+                className="pt-16 px-2 pb-4 w-full h-screen mx-auto flex flex-col"
             >
                 {children}
             </motion.main>

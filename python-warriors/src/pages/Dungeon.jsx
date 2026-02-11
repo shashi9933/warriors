@@ -7,6 +7,7 @@ import { verifyStageSolution, startDungeonRun, progressStage } from '../engine/d
 import { Play, Lock, AlertTriangle, Server, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useSound } from '../context/SoundContext';
+import TutorialModal from '../components/ui/TutorialModal';
 
 // --- Visual Components ---
 
@@ -114,9 +115,29 @@ const Dungeon = () => {
         );
     }
 
+    // --- Tutorial ---
+    const tutorialSlides = [
+        {
+            title: "ENTERING THE DUNGEON",
+            description: "Navigate the grid. Find the key within the nodes to unlock the exit.",
+            icon: Play, // Using Play as placeholder, or Grid if available
+        },
+        {
+            title: "RISK & REWARD",
+            description: "Each step drains energy. Manage your health carefully while searching for loot.",
+            icon: AlertTriangle,
+        },
+        {
+            title: "THE EXIT",
+            description: "Once you have the key, locate the exit node to escape.",
+            icon: Lock,
+        }
+    ];
+
     return (
         <PageLayout>
-            <div className="max-w-7xl mx-auto h-[calc(100vh-64px)] md:h-[calc(100vh-120px)] flex flex-col gap-2 md:gap-4 p-2">
+            <TutorialModal tutorialId="dungeon_run" slides={tutorialSlides} />
+            <div className="flex-1 w-full max-w-7xl mx-auto flex flex-col gap-2 md:gap-4 p-2 overflow-hidden">
 
                 {/* Top Bar: Progress & Status */}
                 <div className="glass-panel p-2 md:p-4 flex flex-col md:flex-row items-center justify-between bg-black/60 border-b border-white/10 gap-2 md:gap-0 shrink-0">

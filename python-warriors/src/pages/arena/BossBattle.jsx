@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import PageLayout from '../../components/layout/PageLayout';
 import Button from '../../components/ui/Button';
 import { usePlayer } from '../../context/PlayerContext';
@@ -6,10 +6,11 @@ import { executePython } from '../../engine/pythonExecutor';
 import { detectPatterns } from '../../engine/patternDetector';
 import { calculateDamage, calculateBossDamage } from '../../engine/combatEngine';
 import { BOSSES } from '../../data/gameData';
-import { Play, AlertTriangle, Cpu, Zap, Activity, Bug, ChevronRight, Skull, Crosshair, Shield, User, Battery, Wifi, Settings, Terminal as TerminalIcon, Code, Hash, Monitor } from 'lucide-react';
+import { Play, AlertTriangle, Cpu, Zap, Activity, Bug, ChevronRight, Skull, Crosshair, Shield, User, Battery, Wifi, Settings, Terminal as TerminalIcon, Code, Hash, Monitor, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSound } from '../../context/SoundContext';
 import { useNavigate } from 'react-router-dom';
+import TutorialModal from '../../components/ui/TutorialModal';
 
 // --- Constants ---
 const POWERS = [
@@ -96,80 +97,128 @@ const PowerCard = ({ power, isActive, isCooldown, onClick }) => {
     );
 };
 
-// --- Sub-Component: Circuit Line (Restored for Map) ---
-const CircuitLine = ({ start, end, color }) => {
-    const x1 = start.x;
-    const y1 = start.y;
-    const x2 = end.x;
-    const y2 = end.y;
-    const midY = (y1 + y2) / 2;
-    const pathD = `M ${x1} ${y1} L ${x1} ${midY} L ${x2} ${midY} L ${x2} ${y2}`;
-    return (
-        <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
-            <path d={pathD} fill="none" stroke={color || '#06b6d4'} strokeWidth="0.5" strokeOpacity="0.1" vectorEffect="non-scaling-stroke" />
-            <path d={pathD} fill="none" stroke={color || '#06b6d4'} strokeWidth="0.2" vectorEffect="non-scaling-stroke" />
-        </svg>
-    );
-};
+// --- Sub-Component: Roadmap Level Node ---
+const RoadmapNode = ({ levelId, index, status, onSelect }) => {
+    const boss = BOSSES[levelId];
+    const isLocked = status === 'LOCKED';
+    const isCompleted = status === 'COMPLETED';
+    const isNext = status === 'NEXT';
 
-// --- Sub-Component: Holo Card (Restored for Map) ---
-const HoloCard = ({ level, x, y }) => {
     return (
-        <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 10 }}
-            className="absolute z-50 pointer-events-none"
-            style={{ left: x, top: y, transform: 'translate(-50%, -100%)' }}
-        >
-            <div className="w-56 bg-black/90 border border-cyan-500/50 rounded-lg p-3 shadow-xl">
-                <h3 className="font-orbitron font-bold text-cyan-400">{level.name}</h3>
-                <div className="text-xs text-gray-400 mt-1">Difficulty: {level.difficulty}</div>
-                {level.status === 'locked' && <div className="text-xs text-red-500 mt-1 font-bold">LOCKED</div>}
+        <div id={levelId} className={`flex items-center gap-4 ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'} w-full max-w-2xl mx-auto my-8 relative z-10 group`}>
+
+            {/* Level Indicator (Circle) */}
+            <motion.button
+                whileHover={!isLocked ? { scale: 1.1 } : {}}
+                whileTap={!isLocked ? { scale: 0.95 } : {}}
+                onClick={() => !isLocked && onSelect(levelId)}
+                className={`
+                    w-16 h-16 md:w-20 md:h-20 rounded-full border-4 flex items-center justify-center relative shrink-0 z-20 transition-all duration-300
+                    ${isLocked ? 'border-gray-700 bg-gray-900 text-gray-600 cursor-not-allowed grayscale' :
+                        isCompleted ? 'border-green-500 bg-green-900/20 text-green-400 shadow-[0_0_20px_rgba(34,197,94,0.4)]' :
+                            'border-cyan-400 bg-cyan-900/20 text-cyan-400 animate-pulse shadow-[0_0_30px_rgba(34,211,238,0.4)] ring-4 ring-cyan-500/20'}
+                `}
+            >
+                {isCompleted ? <Code size={32} /> : isLocked ? <Lock size={24} /> : <Skull size={32} />}
+
+                {/* Level Number Badge */}
+                <div className={`absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border ${isLocked ? 'bg-gray-800 border-gray-600' : 'bg-black border-white text-white'}`}>
+                    {index + 1}
+                </div>
+            </motion.button>
+
+            {/* Connecting Line (Part of the road) - Visual only, main line handled by SVG */}
+
+            {/* Level Info Card */}
+            <div className={`flex-1 ${index % 2 === 0 ? 'text-left' : 'text-right'}`}>
+                <div className={`
+                    inline-block p-4 rounded-xl border backdrop-blur-sm transition-all duration-300
+                    ${isLocked ? 'border-white/5 bg-black/40 opacity-50' :
+                        isNext ? 'border-cyan-500/50 bg-black/80 shadow-lg transform scale-105' :
+                            'border-green-500/30 bg-black/60'}
+                `}>
+                    <h3 className={`font-orbitron font-bold text-sm md:text-lg ${isLocked ? 'text-gray-500' : isNext ? 'text-cyan-400' : 'text-green-400'}`}>
+                        {boss?.name || "Unknown Sector"}
+                    </h3>
+                    {!isLocked && (
+                        <p className="text-xs text-gray-400 mt-1 font-mono max-w-[200px] md:max-w-xs">{boss?.description}</p>
+                    )}
+                    {isNext && <div className="text-[10px] text-cyan-500 uppercase tracking-widest mt-2 animate-pulse">&gt;&gt; CURRENT OBJECTIVE</div>}
+                    {isCompleted && <div className="text-[10px] text-green-500 uppercase tracking-widest mt-2">MISSION ACCOMPLISHED</div>}
+                </div>
             </div>
-        </motion.div>
+        </div>
     );
 };
 
-// --- Sub-Component: Battle Map View ---
+// --- Sub-Component: Battle Map View (Roadmap) ---
 const BattleMap = ({ onSelectLevel }) => {
-
-    const [hoveredLevel, setHoveredLevel] = useState(null);
-    const containerRef = useRef(null);
-
-    // Hardcoded levels for now
-    const allLevels = [
-        { id: 'syntax_spider', name: 'Syntax Spider', chapter: 'BASICS', difficulty: 'EASY', status: 'unlocked', x: 50, y: 85 },
-        { id: 'function_dragon', name: 'Function Dragon', chapter: 'BASICS', difficulty: 'HARD', status: 'unlocked', x: 50, y: 10 },
+    // Define the progression path (IDs match gameData keys)
+    const LEVEL_IDS = [
+        "lvl_1_syntax", "lvl_2_vars", "lvl_3_math", "lvl_4_strings", "lvl_5_lists",
+        "lvl_6_conditions", "lvl_7_loops", "lvl_8_while", "lvl_9_functions", "lvl_10_scope",
+        "lvl_11_dicts", "lvl_12_sets", "lvl_13_classes", "lvl_14_modules", "lvl_15_async"
     ];
 
+    // Locked state logic (Mocked for now - Level 1 is Next, others locked)
+    // In real app, check user progress. defaulting to level 1 unlocked.
+    const completedLevels = []; // Add logic to read from user state
+    const currentLevelId = "lvl_1_syntax";
+
+    // Auto-scroll to current level
+    useEffect(() => {
+        const currentElement = document.getElementById(currentLevelId);
+        if (currentElement) {
+            currentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, [currentLevelId]);
+
     return (
-        <div ref={containerRef} className="relative w-full h-full bg-[#050510] overflow-hidden flex flex-col font-orbitron perspective-[1500px]">
+        <div className="relative w-full h-full bg-[#050510] overflow-y-auto custom-scrollbar flex flex-col font-orbitron pb-10">
             {/* Background Tech Grid */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(30,58,138,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(30,58,138,0.1)_1px,transparent_1px)] bg-[size:40px_40px] opacity-20" />
+            <div className="fixed inset-0 bg-[linear-gradient(rgba(30,58,138,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(30,58,138,0.1)_1px,transparent_1px)] bg-[size:40px_40px] opacity-20 pointer-events-none" />
 
-            {/* Simple Map Visualization */}
-            <div className="relative w-full h-full">
-                {allLevels.map((level) => (
-                    <div key={level.id}
-                        className="absolute cursor-pointer group"
-                        style={{ left: `${level.x}%`, top: `${level.y}%`, transform: 'translate(-50%, -50%)' }}
-                        onClick={() => onSelectLevel(level.id)}
-                        onMouseEnter={() => setHoveredLevel(level)}
-                        onMouseLeave={() => setHoveredLevel(null)}
-                    >
-                        <div className={`w-16 h-16 rounded-xl border-2 flex items-center justify-center bg-black/80 hover:scale-110 transition-transform ${level.difficulty === 'HARD' ? 'border-red-500 shadow-red-500/50' : 'border-cyan-500 shadow-cyan-500/50'} shadow-lg`}>
-                            <Skull size={24} className={level.difficulty === 'HARD' ? 'text-red-500' : 'text-cyan-500'} />
-                        </div>
-                        {hoveredLevel?.id === level.id && <HoloCard level={level} x="50%" y="0" />}
-                    </div>
-                ))}
-                <CircuitLine start={allLevels[0]} end={allLevels[1]} color="#06b6d4" />
+            <div className="text-center py-10 z-10 relative">
+                <h2 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-600 mb-2">CAMPAIGN MAP</h2>
+                <div className="text-cyan-500 text-xs tracking-[0.3em] uppercase">Sector: Python Core</div>
             </div>
 
-            <div className="absolute bottom-10 center-x text-gray-500 text-xs text-center w-full">
-                SELECT A TARGET TO ENGAGE
+            <div className="relative w-full max-w-4xl mx-auto px-4 flex-1">
+                {/* Central Road Line (SVG) */}
+                <div className="absolute left-1/2 top-0 bottom-0 w-1 -translate-x-1/2 bg-gradient-to-b from-cyan-500 via-purple-500 to-red-500 opacity-20 hidden md:block" />
+
+                <div className="flex flex-col gap-8 pb-10">
+                    {/* Rendering Top-Down 1 -> 15 (Level 1 at Top) */}
+
+                    {LEVEL_IDS.map((id, index) => {
+                        let status = 'LOCKED';
+                        if (completedLevels.includes(id)) status = 'COMPLETED';
+                        else if (id === currentLevelId) status = 'NEXT';
+
+                        // Temporary unlock all for testing if needed, or stick to strict
+                        // For demo, let's unlock first 3
+                        if (index < 3) if (index === 0) status = 'NEXT'; else if (index < 3) status = 'LOCKED'; // Wait logic needs fix
+
+                        // Better Logic for Demo:
+                        // If index is 0, it's NEXT (if not completed).
+                        // Let's rely on passed prop or simple local logic
+                        if (index === 0) status = 'NEXT'; // Force level 1 open
+
+                        return (
+                            <RoadmapNode
+                                key={id}
+                                levelId={id}
+                                index={index}
+                                status={status}
+                                onSelect={onSelectLevel}
+                            />
+                        );
+                    })}
+                </div>
             </div>
+
+            {/* Bottom Fade */}
+            <div className="fixed bottom-0 inset-x-0 h-20 bg-gradient-to-t from-[#050510] to-transparent pointer-events-none z-20" />
         </div>
     );
 };
@@ -505,12 +554,46 @@ const ActiveCombat = ({ bossId, onBack }) => {
     const [isExecuting, setIsExecuting] = useState(false);
 
     // Game State
-    const [boss, setBoss] = useState(BOSSES[bossId] ? { ...BOSSES[bossId] } : { ...BOSSES.function_dragon, name: "Unknown Entity" });
+    const [boss, setBoss] = useState(BOSSES[bossId] ? { ...BOSSES[bossId] } : { ...BOSSES.lvl_9_functions, name: "Unknown Entity" });
     const [phase, setPhase] = useState('NORMAL'); // NORMAL, FIREWALL, GLITCH
     const [powerCharge, setPowerCharge] = useState(0); // 0-100
     const [activePowers, setActivePowers] = useState([]); // List of active effects
     const [floatingText, setFloatingText] = useState([]);
     const [visualEffect, setVisualEffect] = useState(null);
+    const [rage, setRage] = useState(0);
+    const [focus, setFocus] = useState(100);
+
+    // Tutorial Data
+    const tutorialSlides = [
+        {
+            title: "BOSS BATTLE PROTOCOL",
+            description: "Engage the Enemy Algorithm using Python code. Your goal is to reduce their HP to zero while maintaining your system integrity.",
+            icon: TerminalIcon,
+        },
+        {
+            title: "CODING COMBAT",
+            description: "Type valid Python code in the terminal to execute attacks. Use 'attack()' for basic damage or 'loop(n)' for combos.",
+            icon: Code,
+            content: (
+                <div className="font-mono text-xs text-green-400 bg-black p-3 rounded border border-gray-700">
+                    <div className="text-gray-500 mb-1"># Example Attack</div>
+                    <span className="text-purple-400">def</span> <span className="text-yellow-400">execute_strike</span>():<br />
+                    &nbsp;&nbsp;attack(boss)<br />
+                    &nbsp;&nbsp;<span className="text-blue-400">return</span> True
+                </div>
+            )
+        },
+        {
+            title: "PHASE SHIFTS",
+            description: "Bosses have phases. 'Firewall' reduces incoming damage. 'Glitch' is chaotic and dangerous. Adapt your strategy.",
+            icon: AlertTriangle,
+        },
+        {
+            title: "SYSTEM RESOURCES",
+            description: "Manage your HP (Health), Focus (Mana for special moves), and Rage (Ultimate ability charge).",
+            icon: Activity,
+        }
+    ];
 
     // Powers Definition (Using global constant)
 
@@ -631,6 +714,7 @@ const ActiveCombat = ({ bossId, onBack }) => {
 
     return (
         <div className="h-full flex flex-col bg-[#050510] overflow-hidden relative">
+            <TutorialModal tutorialId="boss_battle_combat" slides={tutorialSlides} />
             <TopStatusBar player={playerData} boss={boss} />
 
             <div className="flex-1 flex flex-col md:flex-row overflow-hidden relative">
@@ -681,7 +765,7 @@ const BossBattle = () => {
                 </div>
             )}
 
-            <div className="h-[calc(100vh-64px)] w-full overflow-hidden mt-2 border border-white/10 rounded-lg relative z-0 bg-black">
+            <div className="flex-1 w-full overflow-hidden mt-1 border border-white/10 rounded-lg relative z-0 bg-black">
                 <AnimatePresence mode="wait">
                     {view === 'MAP' ? (
                         <motion.div

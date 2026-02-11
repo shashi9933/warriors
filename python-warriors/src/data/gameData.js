@@ -61,52 +61,146 @@ export const CLASSES = {
 };
 
 export const BOSSES = {
-    function_dragon: {
-        id: "function_dragon",
-        name: "Function Dragon",
-        hp: 500,
-        maxHp: 500,
-        damage: 10,
-        phases: [
-            { threshold: 70, name: "Normal", damageMult: 1 },
-            { threshold: 40, name: "Enraged", damageMult: 1.5, message: "The dragon's eyes glow red! (Damage x1.5)" },
-            { threshold: 0, name: "Desperate", damageMult: 2, message: "The dragon unleashes unlimited recursion! (Damage x2)" }
-        ]
-    },
-    memory_leech: {
-        id: "memory_leech",
-        name: "Memory Leech",
-        hp: 300,
-        maxHp: 300,
-        damage: 5,
-        description: "A parasitic entity that drains system resources.",
-        mechanic: "Regenerates HP every turn. Drains your Focus.",
-        phases: [
-            { threshold: 50, name: "Siphon", damageMult: 1, message: "The Leech siphons your memory! (Focus Drained)" },
-            { threshold: 0, name: "Overflow", damageMult: 3, message: "Use List Comprehension to purge it!" }
-        ]
-    },
-    array_golem: {
-        id: "array_golem",
-        name: "Array Golem",
-        hp: 800,
-        maxHp: 800,
-        damage: 15,
-        description: "A construct made of rigid data blocks.",
-        mechanic: "Immune to single strikes. Needs multi-target loops.",
-        phases: [
-            { threshold: 60, name: "Fragment", damageMult: 1.2, message: " The Golem shatters into smaller chunks!" }
-        ]
-    },
-    syntax_spider: {
-        id: "syntax_spider",
+    lvl_1_syntax: {
+        id: "lvl_1_syntax",
         name: "Syntax Spider",
+        hp: 100,
+        maxHp: 100,
+        damage: 5,
+        description: "A small bug that trips you up with missing parentheses.",
+        phases: []
+    },
+    lvl_2_vars: {
+        id: "lvl_2_vars",
+        name: "Variable Viper",
+        hp: 150,
+        maxHp: 150,
+        damage: 8,
+        description: "Its venom changes types unexpectedly.",
+        phases: []
+    },
+    lvl_3_math: {
+        id: "lvl_3_math",
+        name: "Operator Ogre",
         hp: 200,
         maxHp: 200,
-        damage: 25,
-        description: "Fast and deadly. Wraps you in error logs.",
-        mechanic: "High dodge chance. Use precise syntax to hit.",
+        damage: 12,
+        description: "Crushes those who divide by zero.",
+        phases: [{ threshold: 50, name: "Modulo Rage", damageMult: 1.5, message: "The Ogre calculates the remainder... of your life!" }]
+    },
+    lvl_4_strings: {
+        id: "lvl_4_strings",
+        name: "String Serpent",
+        hp: 250,
+        maxHp: 250,
+        damage: 10,
+        description: "Wraps you in concatenated coils.",
         phases: []
+    },
+    lvl_5_lists: {
+        id: "lvl_5_lists",
+        name: "List Leviathan",
+        hp: 350,
+        maxHp: 350,
+        damage: 15,
+        description: "A deep sea monster with many segments.",
+        phases: [{ threshold: 40, name: "Append Mode", damageMult: 1.2, message: "The Leviathan grows a new segment!" }]
+    },
+    lvl_6_conditions: {
+        id: "lvl_6_conditions",
+        name: "Boolean Basilisk",
+        hp: 400,
+        maxHp: 400,
+        damage: 18,
+        description: "One look at its False logic can petrify you.",
+        phases: []
+    },
+    lvl_7_loops: {
+        id: "lvl_7_loops",
+        name: "Loop Lich",
+        hp: 500,
+        maxHp: 500,
+        damage: 15,
+        description: "Traps souls in an infinite cycle.",
+        phases: [{ threshold: 30, name: "Infinite Loop", damageMult: 2, message: "BREAK THE LOOP OR PERISH!" }]
+    },
+    lvl_8_while: {
+        id: "lvl_8_while",
+        name: "Infinite Imp",
+        hp: 450,
+        maxHp: 450,
+        damage: 12,
+        description: "A chaotic demon that never stops until the condition is met.",
+        phases: []
+    },
+    lvl_9_functions: {
+        id: "lvl_9_functions",
+        name: "Function Dragon",
+        hp: 800,
+        maxHp: 800,
+        damage: 25,
+        description: "The guardian of the Scope. Breathes pure logic.",
+        phases: [
+            { threshold: 60, name: "Recursive Flame", damageMult: 1.5, message: "The Dragon calls upon itself!" },
+            { threshold: 20, name: "Stack Overflow", damageMult: 2.5, message: "MAXIMUM RECURSION DEPTH EXCEEDED" }
+        ]
+    },
+    lvl_10_scope: {
+        id: "lvl_10_scope",
+        name: "Scope Spectre",
+        hp: 600,
+        maxHp: 600,
+        damage: 20,
+        description: "An intangible ghost that hides in local variables.",
+        phases: []
+    },
+    lvl_11_dicts: {
+        id: "lvl_11_dicts",
+        name: "Dictionary Daemon",
+        hp: 700,
+        maxHp: 700,
+        damage: 22,
+        description: "Knows the key to your destruction.",
+        phases: [{ threshold: 50, name: "Key Error", damageMult: 1.5, message: "The Daemon invalidates your inputs!" }]
+    },
+    lvl_12_sets: {
+        id: "lvl_12_sets",
+        name: "Set Sphinx",
+        hp: 750,
+        maxHp: 750,
+        damage: 20,
+        description: "Only accepts unique attacks.",
+        phases: []
+    },
+    lvl_13_classes: {
+        id: "lvl_13_classes",
+        name: "Class Colossus",
+        hp: 1000,
+        maxHp: 1000,
+        damage: 30,
+        description: "A massive object-oriented construct.",
+        phases: [{ threshold: 40, name: "Inheritance", damageMult: 1.5, message: "The Colossus inherits strength from its ancestors!" }]
+    },
+    lvl_14_modules: {
+        id: "lvl_14_modules",
+        name: "Module Mimic",
+        hp: 900,
+        maxHp: 900,
+        damage: 25,
+        description: "Can import any ability it sees.",
+        phases: []
+    },
+    lvl_15_async: {
+        id: "lvl_15_async",
+        name: "Async Archon",
+        hp: 1500,
+        maxHp: 1500,
+        damage: 40,
+        description: "Exists outside of linear time. The final test.",
+        phases: [
+            { threshold: 75, name: "Await", damageMult: 0.5, message: "The Archon pauses time..." },
+            { threshold: 25, name: "Promise Rejection", damageMult: 3, message: "UNHANDLED PROMISE REJECTION!" }
+        ]
     }
 };
 

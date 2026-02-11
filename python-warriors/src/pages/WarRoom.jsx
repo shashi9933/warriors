@@ -70,63 +70,47 @@ const WarRoom = () => {
 
     return (
         <PageLayout>
-            <div className="flex flex-col h-full space-y-6 pt-14 animate-in fade-in duration-700">
+            <div className="flex-1 w-full max-w-7xl mx-auto flex flex-col gap-4 p-2 overflow-hidden relative z-10 animate-in fade-in duration-700">
 
-                {/* Header / ID Card (Always Visible) */}
-                <div className="flex flex-col md:flex-row gap-6">
-                    {/* ID Card */}
-                    <div className="glass-panel p-4 flex items-center gap-4 relative overflow-hidden flex-shrink-0 md:w-1/3">
-                        <div className="w-16 h-16 bg-gradient-to-br from-cyan-900 to-blue-900 rounded-full flex items-center justify-center border-2 border-cyan-500/50 relative">
-                            <Scan size={32} className="text-cyan-400 animate-pulse-slow" />
-                            <div className="absolute inset-0 border-t border-cyan-400 rounded-full animate-spin-slow opacity-50" />
+                {/* Compact Header */}
+                <div className="flex flex-col md:flex-row gap-4 shrink-0">
+                    <div className="glass-panel p-3 flex items-center gap-4 flex-1 relative overflow-hidden">
+                        <div className="w-12 h-12 bg-cyan-900/30 rounded-full flex items-center justify-center border border-cyan-500/50">
+                            <Scan size={24} className="text-cyan-400" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-orbitron theme-text">{playerData.classType}</h2>
-                            <p className={`text-xs font-mono font-bold ${getRank(level).color}`}>
-                                {getRank(level).title} <span className="text-gray-500">// Lvl {level}</span>
-                            </p>
+                            <h2 className="text-lg font-orbitron theme-text">{playerData.classType}</h2>
+                            <p className="text-xs font-mono text-gray-500">Lvl {level} // {getRank(level).title}</p>
                         </div>
-                        <div className="absolute right-4 top-4 text-right">
-                            <div className="text-[10px] text-gray-500">SYS_ID</div>
-                            <div className="font-mono text-gray-300 text-xs">#0xFFFF</div>
-                        </div>
-                    </div>
 
-                    {/* XP Module */}
-                    <div className="glass-panel p-4 flex flex-col justify-center flex-grow relative overflow-hidden group">
-                        <div className="flex justify-between items-end mb-2">
-                            <span className="text-xs font-orbitron text-gray-400">MEMORY ALLOCATION (XP)</span>
-                            <span className="text-sm font-mono text-cyan-300">{xp} / {maxXp}</span>
-                        </div>
-                        <div className="h-3 bg-gray-900 rounded-sm overflow-hidden border border-theme-text/5 relative">
+                        {/* XP Bar Integrated */}
+                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-900">
                             <motion.div
-                                className="h-full bg-gradient-to-r from-cyan-600 via-blue-500 to-purple-600"
+                                className="h-full bg-cyan-500"
                                 initial={{ width: 0 }}
                                 animate={{ width: `${xpPercent}%` }}
-                                transition={{ duration: 1, ease: 'easeOut' }}
                             />
-                            <div className="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjbm9pc2UpIiBvcGFjaXR5PSIwLjUiLz48L3N2Zz4=')]" />
                         </div>
                     </div>
-                </div>
 
-                {/* Tab Navigation */}
-                <div className="flex gap-2 border-b border-theme-text/10 overflow-x-auto pb-1">
-                    {navTabs.map(tab => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={clsx(
-                                "flex items-center gap-2 px-6 py-3 rounded-t-lg font-orbitron text-xs tracking-wider transition-all whitespace-nowrap",
-                                activeTab === tab.id
-                                    ? "bg-theme-text/10 text-cyan-400 border-b-2 border-cyan-500"
-                                    : "text-gray-500 hover:theme-text hover:bg-theme-text/5"
-                            )}
-                        >
-                            <tab.icon size={14} />
-                            {tab.label}
-                        </button>
-                    ))}
+                    {/* Navigation Tabs - Simplified */}
+                    <div className="flex gap-1 bg-black/40 p-1 rounded-lg border border-white/10 overflow-x-auto">
+                        {navTabs.map(tab => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={clsx(
+                                    "flex items-center gap-2 px-4 py-2 rounded font-orbitron text-[10px] tracking-wider transition-all whitespace-nowrap flex-1 justify-center",
+                                    activeTab === tab.id
+                                        ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.2)]"
+                                        : "text-gray-500 hover:text-gray-300 hover:bg-white/5"
+                                )}
+                            >
+                                <tab.icon size={14} />
+                                <span className="hidden md:inline">{tab.label.split(' ')[0]}</span>
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Content Area */}

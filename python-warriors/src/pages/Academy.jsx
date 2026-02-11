@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import PageLayout from '../components/layout/PageLayout';
 import Button from '../components/ui/Button';
-import { BookOpen, Code, Play, CheckCircle, Lock, Terminal, Monitor, Cpu } from 'lucide-react';
+import { BookOpen, Code, Play, CheckCircle, Lock, Terminal, Monitor, Cpu, Database, ChevronRight, Layers } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const CHAPTERS = [
     {
         id: 'basics',
-        title: 'Chapter 1: The Source Code',
-        desc: 'Master the fundamentals of Python syntax.',
+        title: 'SEQUENCE 1: CORE SYNTAX',
+        desc: 'Initialize your neural pathways with Python fundamentals.',
         modules: [
             {
                 id: 1,
@@ -33,6 +33,7 @@ const CHAPTERS = [
                 lectures: [
                     { title: "Boolean Logic", duration: "10:00", completed: false },
                     { title: "Conditional Branching", duration: "15:00", completed: false },
+                    { title: "Loops & Iteration", duration: "15:00", completed: false } // Fixed to match original count if needed or just kept distinct
                 ],
                 practice: {
                     title: "Security Check",
@@ -44,8 +45,8 @@ const CHAPTERS = [
     },
     {
         id: 'structures',
-        title: 'Chapter 2: Data Structures',
-        desc: 'Organize and manipulate complex data.',
+        title: 'SEQUENCE 2: DATA MATRICES',
+        desc: 'Organize and manipulate complex data structures.',
         modules: [
             {
                 id: 3,
@@ -85,140 +86,170 @@ const Academy = () => {
     const [activeModule, setActiveModule] = useState(CHAPTERS[0].modules[0]);
     const [mode, setMode] = useState('LECTURE'); // LECTURE or PRACTICE
     const [code, setCode] = useState("");
+    const [output, setOutput] = useState("");
+
+    const handleRunCode = () => {
+        setOutput("> Compiling...");
+        setTimeout(() => {
+            // Simple mock validation
+            if (code.length > 10) {
+                setOutput("> ABSTRACTION LAYER: SUCCESS\n> OUTPUT: [Process Completed with Exit Code 0]\n> REWARD: 50 XP Gained");
+            } else {
+                setOutput("> SYNTAX ERROR: Logic density too low.\n> HINT: Expand your algorithmic approach.");
+            }
+        }, 1000);
+    };
 
     return (
         <PageLayout>
-            <div className="max-w-7xl mx-auto h-[calc(100vh-64px)] md:h-[calc(100vh-120px)] flex flex-col md:flex-row gap-4 md:gap-6 p-2 md:p-4">
+            <div className="flex-1 w-full flex flex-col md:flex-row gap-6 p-2 md:p-4 overflow-hidden relative z-10 animate-in fade-in duration-700">
 
-                {/* Left: Module Sidebar */}
-                <div className="w-full md:w-1/4 h-1/3 md:h-auto glass-panel p-0 flex flex-col overflow-hidden bg-black/60 border-b md:border-b-0 md:border-r border-white/10 shrink-0">
-                    <div className="p-3 md:p-4 border-b border-white/10 bg-cyan-900/10">
-                        <h2 className="font-orbitron text-lg md:text-xl text-cyan-400 flex items-center gap-2">
-                            <BookOpen size={18} /> ACADEMY
-                        </h2>
+                {/* Left: Codex Navigation */}
+                <div className="w-full md:w-80 flex flex-col gap-4 shrink-0">
 
-                        {/* Chapter Selector */}
-                        <select
-                            className="mt-2 w-full bg-black border border-white/10 text-xs text-gray-300 p-2 rounded outline-none"
-                            value={activeChapter.id}
-                            onChange={(e) => {
-                                const chap = CHAPTERS.find(c => c.id === e.target.value);
-                                setActiveChapter(chap);
-                                setActiveModule(chap.modules[0]);
-                            }}
-                        >
-                            {CHAPTERS.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
-                        </select>
+                    {/* Header */}
+                    <div className="glass-panel p-4 flex items-center gap-3 border-l-4 border-l-cyan-500">
+                        <div className="w-10 h-10 rounded bg-cyan-900/20 flex items-center justify-center border border-cyan-500/30">
+                            <Database size={20} className="text-cyan-400" />
+                        </div>
+                        <div>
+                            <h2 className="font-orbitron text-lg text-white">THE CODEX</h2>
+                            <p className="text-[10px] text-gray-400 font-mono">KNOWLEDGE ARCHIVE</p>
+                        </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4">
-                        {activeChapter.modules.map((module, i) => (
-                            <div
-                                key={module.id}
-                                onClick={() => {
-                                    setActiveModule(module);
-                                    setMode('LECTURE');
-                                }}
-                                className={`p-3 md:p-4 rounded-lg border cursor-pointer transition-all duration-300 relative group overflow-hidden
-                                    ${activeModule.id === module.id ? 'bg-cyan-900/20 border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.1)]' : 'bg-black/40 border-white/5 hover:bg-white/5'}
-                                `}
-                            >
-                                <div className="flex justify-between items-start mb-1 md:mb-2">
-                                    <span className="text-[10px] md:text-xs font-mono text-gray-500">MODULE 0{i + 1}</span>
-                                    {i === 0 ? <CheckCircle size={12} className="text-green-500" /> : <Lock size={12} className="text-gray-600" />}
+                    {/* Chapter Selection */}
+                    <div className="glass-panel p-2 flex-1 overflow-y-auto custom-scrollbar">
+                        {CHAPTERS.map(chapter => (
+                            <div key={chapter.id} className="mb-4 last:mb-0">
+                                <div className="px-3 py-2 text-xs font-bold text-gray-500 font-orbitron tracking-widest uppercase flex items-center gap-2">
+                                    <Layers size={12} /> {chapter.title}
                                 </div>
-                                <h3 className={`font-orbitron font-bold text-xs md:text-sm mb-1 ${activeModule.id === module.id ? 'text-white' : 'text-gray-400'}`}>
-                                    {module.title}
-                                </h3>
-                                <p className="text-[10px] md:text-xs text-gray-500 truncate">{module.desc}</p>
-
-                                {/* Active Indicator */}
-                                {activeModule.id === module.id && (
-                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-cyan-500" />
-                                )}
+                                <div className="space-y-1 mt-1">
+                                    {chapter.modules.map(mod => (
+                                        <button
+                                            key={mod.id}
+                                            onClick={() => {
+                                                setActiveChapter(chapter);
+                                                setActiveModule(mod);
+                                                setMode('LECTURE');
+                                            }}
+                                            className={`w-full text-left p-3 rounded border transition-all duration-200 group relative overflow-hidden
+                                                ${activeModule.id === mod.id
+                                                    ? 'bg-cyan-900/20 border-cyan-500/50 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.1)]'
+                                                    : 'bg-black/40 border-white/5 text-gray-400 hover:bg-white/5 hover:text-gray-200'}
+                                            `}
+                                        >
+                                            <div className="flex justify-between items-center relative z-10">
+                                                <span className="text-xs font-bold font-mono group-hover:translate-x-1 transition-transform">{mod.title}</span>
+                                                {activeModule.id === mod.id && <ChevronRight size={14} className="text-cyan-400" />}
+                                            </div>
+                                            {activeModule.id === mod.id && (
+                                                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-transparent" />
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                {/* Right: Content Area */}
-                <div className="flex-1 glass-panel p-0 flex flex-col bg-black/80 relative overflow-hidden min-h-0">
+                {/* Right: Content Viewer */}
+                <div className="flex-1 glass-panel p-0 flex flex-col relative overflow-hidden bg-black/80 border border-white/10">
 
-                    {/* Header Tabs */}
-                    <div className="flex border-b border-white/10 bg-black/40 shrink-0">
-                        <button
-                            onClick={() => setMode('LECTURE')}
-                            className={`flex-1 py-3 md:py-4 text-xs md:text-sm font-orbitron tracking-widest flex items-center justify-center gap-2 transition-colors
-                                ${mode === 'LECTURE' ? 'text-cyan-400 bg-cyan-900/10 border-b-2 border-cyan-500' : 'text-gray-500 hover:text-gray-300'}
-                            `}
-                        >
-                            <Monitor size={14} className="md:w-4 md:h-4" /> LECTURE HALL
-                        </button>
-                        <button
-                            onClick={() => {
-                                setMode('PRACTICE');
-                                setCode(activeModule.practice.starterCode);
-                            }}
-                            className={`flex-1 py-3 md:py-4 text-xs md:text-sm font-orbitron tracking-widest flex items-center justify-center gap-2 transition-colors
-                                ${mode === 'PRACTICE' ? 'text-purple-400 bg-purple-900/10 border-b-2 border-purple-500' : 'text-gray-500 hover:text-gray-300'}
-                            `}
-                        >
-                            <Code size={14} className="md:w-4 md:h-4" /> PRACTICE LAB
-                        </button>
+                    {/* Top Bar */}
+                    <div className="h-14 border-b border-white/10 flex items-center px-4 justify-between bg-black/40">
+                        <div className="flex items-center gap-4">
+                            <span className="text-xs font-mono text-cyan-500 bg-cyan-900/20 px-2 py-1 rounded border border-cyan-500/30">
+                                MOD_ID: {activeModule.id.toString().padStart(3, '0')}
+                            </span>
+                            <h2 className="text-sm md:text-base font-bold text-white font-orbitron">{activeModule.title}</h2>
+                        </div>
+
+                        {/* Mode Toggles */}
+                        <div className="flex bg-black/60 rounded p-1 border border-white/10">
+                            <button
+                                onClick={() => setMode('LECTURE')}
+                                className={`px-3 py-1 rounded text-[10px] font-bold tracking-wider flex items-center gap-2 transition-all
+                                    ${mode === 'LECTURE' ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/20' : 'text-gray-500 hover:text-gray-300'}
+                                `}
+                            >
+                                <Monitor size={12} /> DATA
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setMode('PRACTICE');
+                                    setCode(activeModule.practice.starterCode);
+                                }}
+                                className={`px-3 py-1 rounded text-[10px] font-bold tracking-wider flex items-center gap-2 transition-all
+                                    ${mode === 'PRACTICE' ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/20' : 'text-gray-500 hover:text-gray-300'}
+                                `}
+                            >
+                                <Code size={12} /> SIMULATION
+                            </button>
+                        </div>
                     </div>
 
-                    {/* Content */}
-                    <div className="flex-1 p-4 md:p-8 overflow-y-auto">
+                    {/* Main Content */}
+                    <div className="flex-1 overflow-y-auto p-4 md:p-8 relative">
+                        <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+
                         <AnimatePresence mode="wait">
                             {mode === 'LECTURE' && (
                                 <motion.div
                                     key="lecture"
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: 20 }}
-                                    className="space-y-6 md:space-y-8"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    className="relative z-10 max-w-3xl mx-auto space-y-8"
                                 >
-                                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
+                                    <div className="flex items-start gap-4 mb-4">
+                                        <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-cyan-900/50 to-blue-900/50 border border-cyan-500/30 flex items-center justify-center shrink-0">
+                                            <BookOpen size={32} className="text-cyan-400" />
+                                        </div>
                                         <div>
-                                            <h2 className="text-2xl md:text-3xl font-black font-orbitron text-white mb-1 md:mb-2">{activeModule.title}</h2>
-                                            <p className="text-xs md:text-base text-gray-400">Accessing neural database...</p>
-                                        </div>
-                                        <div className="px-3 py-1 md:px-4 md:py-2 bg-green-500/10 border border-green-500/30 rounded text-green-400 text-[10px] md:text-xs font-mono">
-                                            PROGRESS: 33%
+                                            <h1 className="text-2xl md:text-3xl font-orbitron font-black text-white mb-2">{activeModule.title}</h1>
+                                            <p className="text-gray-400 text-sm md:text-base">{activeModule.desc}</p>
                                         </div>
                                     </div>
 
-                                    {/* Video Placeholder */}
-                                    <div className="w-full aspect-video bg-black rounded-xl border border-white/10 flex items-center justify-center relative group cursor-pointer overflow-hidden">
-                                        <div className="absolute inset-0 group-hover:opacity-80 transition-opacity bg-gradient-to-tr from-cyan-900/20 to-purple-900/20" />
-                                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform z-10">
-                                            <Play size={24} className="text-cyan-400 ml-1 md:w-8 md:h-8" />
+                                    {/* Video / Visual Placeholder */}
+                                    <div className="w-full aspect-video bg-black rounded-lg border border-white/10 relative group overflow-hidden shadow-2xl">
+                                        <div className="absolute inset-0 bg-gradient-to-tr from-cyan-900/20 to-purple-900/20 opacity-50 group-hover:opacity-100 transition-opacity" />
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <div className="w-16 h-16 rounded-full bg-cyan-500/10 border border-cyan-400/50 flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform cursor-pointer">
+                                                <Play size={24} className="text-cyan-400 ml-1" />
+                                            </div>
                                         </div>
-                                        <div className="absolute bottom-4 left-4 text-xs md:text-sm font-mono text-cyan-300">
-                                            NOW PLAYING: {activeModule.lectures.find(l => !l.completed)?.title || "Introduction"}
+                                        <div className="absolute bottom-4 left-4 font-mono text-xs text-cyan-500">
+                                            ACCESSING_NEURAL_FEED...
                                         </div>
                                     </div>
 
-                                    {/* Topics List */}
-                                    <div className="space-y-2">
-                                        <h3 className="text-xs md:text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 md:mb-4">Course Curriculum</h3>
-                                        {activeModule.lectures.map((lecture, i) => (
-                                            <div key={i} className="flex items-center justify-between p-3 md:p-4 rounded bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
-                                                <div className="flex items-center gap-3 md:gap-4">
-                                                    <div className={`w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-[10px] md:text-xs font-bold font-mono ${lecture.completed ? 'bg-green-500/20 text-green-400' : 'bg-gray-800 text-gray-500'}`}>
+                                    {/* Curriculum List */}
+                                    <div className="space-y-3">
+                                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest border-b border-white/5 pb-2">Modules Loaded</h3>
+                                        {activeModule.lectures.map((lec, i) => (
+                                            <div key={i} className="flex items-center justify-between p-3 bg-white/5 border border-white/5 rounded hover:bg-white/10 transition-colors group cursor-pointer">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold ${lec.completed ? 'bg-green-500/20 text-green-400' : 'bg-gray-800 text-gray-500'}`}>
                                                         {i + 1}
                                                     </div>
-                                                    <span className={`text-xs md:text-sm ${lecture.completed ? 'text-gray-300' : 'text-gray-500'}`}>{lecture.title}</span>
+                                                    <span className={`text-sm ${lec.completed ? 'text-gray-300' : 'text-gray-400 group-hover:text-white'}`}>{lec.title}</span>
                                                 </div>
-                                                <span className="text-[10px] md:text-xs font-mono text-gray-600">{lecture.duration}</span>
+                                                <span className="text-xs font-mono text-gray-600 border border-white/5 px-2 py-0.5 rounded">{lec.duration}</span>
                                             </div>
                                         ))}
                                     </div>
 
-                                    <div className="flex justify-end pt-4">
-                                        <Button variant="primary" onClick={() => navigate('/battle-arena')}>
-                                            PROCEED TO BATTLE ARENA
-                                        </Button>
+                                    <div className="pt-8 flex justify-center">
+                                        <Link to="/arena" className="group relative px-8 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-orbitron font-bold rounded overflow-hidden transition-all">
+                                            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                                            <span className="relative flex items-center gap-2">
+                                                ENGAGE PRACTICAL EXAM <ChevronRight size={16} />
+                                            </span>
+                                        </Link>
                                     </div>
                                 </motion.div>
                             )}
@@ -226,43 +257,57 @@ const Academy = () => {
                             {mode === 'PRACTICE' && (
                                 <motion.div
                                     key="practice"
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -20 }}
-                                    className="h-full flex flex-col gap-4 md:gap-6"
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.95 }}
+                                    className="h-full flex flex-col relative z-10"
                                 >
-                                    <div className="bg-purple-900/10 border border-purple-500/30 p-3 md:p-4 rounded-lg">
-                                        <h3 className="text-purple-400 font-orbitron text-sm md:text-lg mb-1 md:mb-2 flex items-center gap-2">
-                                            <Cpu size={16} className="md:w-[18px]" /> {activeModule.practice.title}
+                                    <div className="bg-purple-900/10 border border-purple-500/20 p-4 rounded-lg mb-4">
+                                        <h3 className="text-purple-400 font-orbitron text-sm mb-2 flex items-center gap-2">
+                                            <Terminal size={16} /> SIMULATION PARAMETERS
                                         </h3>
-                                        <p className="text-gray-300 text-xs md:text-sm leading-relaxed">
-                                            {activeModule.practice.desc}
-                                        </p>
+                                        <p className="text-gray-300 text-sm">{activeModule.practice.desc}</p>
                                     </div>
 
-                                    <div className="flex-1 bg-[#1a1a1a] rounded-lg border border-white/10 overflow-hidden flex flex-col min-h-[300px]">
-                                        <div className="bg-black/50 p-2 border-b border-white/10 flex justify-between items-center px-4">
-                                            <span className="text-xs text-gray-500 font-mono">sandbox.py</span>
-                                            <div className="flex gap-1">
-                                                <div className="w-2 h-2 rounded-full bg-red-500/50" />
-                                                <div className="w-2 h-2 rounded-full bg-yellow-500/50" />
-                                                <div className="w-2 h-2 rounded-full bg-green-500/50" />
-                                            </div>
+                                    <div className="flex-1 bg-[#0d0d0d] rounded-lg border border-white/10 flex flex-col overflow-hidden shadow-2xl font-mono text-sm relative group">
+                                        {/* Mock Line Numbers */}
+                                        <div className="absolute left-0 top-0 bottom-0 w-8 bg-white/5 text-gray-600 flex flex-col items-end pr-2 pt-4 select-none pointer-events-none">
+                                            {Array.from({ length: 20 }).map((_, i) => <div key={i}>{i + 1}</div>)}
                                         </div>
+
                                         <textarea
                                             value={code}
                                             onChange={(e) => setCode(e.target.value)}
-                                            className="flex-1 bg-transparent text-gray-300 font-mono p-3 md:p-4 resize-none focus:outline-none text-xs md:text-sm"
+                                            className="flex-1 bg-transparent text-gray-300 font-mono p-4 pl-10 resize-none focus:outline-none leading-normal relative z-10"
                                             spellCheck="false"
                                         />
+
+                                        {/* Mock Output Area (Hidden usually, simplified here) */}
+                                        <div className="h-32 border-t border-white/10 bg-black/80 p-2 font-mono text-xs">
+                                            <div className="flex items-center gap-2 text-gray-500 mb-1">
+                                                <Terminal size={12} /> CONSOLE OUTPUT
+                                            </div>
+                                            <div className="text-green-500">
+                                                {output || "> Waiting for compilation..."}
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <div className="flex justify-end gap-3 md:gap-4 pb-4">
-                                        <Button variant="secondary" onClick={() => setCode(activeModule.practice.starterCode)}>
-                                            RESET
+                                    <div className="flex justify-end gap-3 mt-4">
+                                        <Button variant="secondary" onClick={() => {
+                                            setCode(activeModule.practice.starterCode);
+                                            setOutput('');
+                                        }}>
+                                            RESET SEQUENCE
                                         </Button>
-                                        <Button variant="accent">
-                                            RUN TEST <Play size={14} className="ml-2 md:w-4" />
+                                        <Button
+                                            variant="accent"
+                                            className="bg-purple-600 hover:bg-purple-500 relative overflow-hidden"
+                                            onClick={handleRunCode}
+                                        >
+                                            <span className="relative z-10 flex items-center gap-2">
+                                                COMPILE & RUN <Play size={14} />
+                                            </span>
                                         </Button>
                                     </div>
                                 </motion.div>
@@ -270,7 +315,6 @@ const Academy = () => {
                         </AnimatePresence>
                     </div>
                 </div>
-
             </div>
         </PageLayout>
     );

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Timer, Zap, AlertCircle, CheckCircle, XCircle, ChevronRight, Terminal } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import NeonButton from '../../components/ui/NeonButton';
+import TutorialModal from '../../components/ui/TutorialModal';
 
 const QUESTIONS = [
     {
@@ -98,7 +99,6 @@ const LogicWars = () => {
         setGameState('PLAYING');
     };
 
-    // Shake animation variants
     const shakeVariant = {
         hidden: { x: 0 },
         visible: {
@@ -107,8 +107,28 @@ const LogicWars = () => {
         }
     };
 
+    // --- Tutorial Data ---
+    const tutorialSlides = [
+        {
+            title: "LOGIC WARS INITIATED",
+            description: "Test your Python knowledge against AI opponents. Speed and accuracy are your weapons.",
+            icon: Terminal,
+        },
+        {
+            title: "ANSWER QUICKLY",
+            description: "You have limited time to answer each question. The faster you answer, the more damage you deal.",
+            icon: Zap,
+        },
+        {
+            title: "AVOID ERRORS",
+            description: "Incorrect answers will damage your system integrity. Three strikes and you're out.",
+            icon: AlertCircle,
+        }
+    ];
+
     return (
         <PageLayout>
+            <TutorialModal tutorialId="logic_wars" slides={tutorialSlides} />
             <div className="absolute top-20 left-6 z-50">
                 <button onClick={() => navigate('/battle-arena')} className="flex items-center gap-2 text-cyan-400 hover:text-white transition-colors text-sm font-bold tracking-widest uppercase">
                     <ChevronRight className="rotate-180" size={16} /> Return to Hub
