@@ -10,6 +10,8 @@ import BattleArena from './pages/BattleArena';
 import Dungeon from './pages/Dungeon';
 import Rankings from './pages/Rankings';
 import Academy from './pages/Academy';
+import BossBattle from './pages/arena/BossBattle';
+import LogicWars from './pages/arena/LogicWars';
 
 import World from './pages/World';
 
@@ -24,6 +26,8 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/war-room" element={<WarRoom />} />
               <Route path="/battle-arena" element={<BattleArena />} />
+              <Route path="/arena/boss" element={<BossBattle />} />
+              <Route path="/arena/mcq" element={<LogicWars />} />
               <Route path="/dungeon" element={<Dungeon />} />
               <Route path="/world" element={<World />} />
               <Route path="/academy" element={<Academy />} />
