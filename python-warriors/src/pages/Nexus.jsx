@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import PageLayout from '../components/layout/PageLayout';
 import { motion } from 'framer-motion';
-import { Zap, Activity, Terminal, Cpu, Database, Award, Target, Globe, BookOpen } from 'lucide-react';
+import { Zap, Activity, Terminal, Cpu, Database, Award, Target, Globe, BookOpen, Info } from 'lucide-react';
 import { useSound } from '../context/SoundContext';
 import { usePlayer } from '../context/PlayerContext';
 import { clsx } from 'clsx';
@@ -59,8 +59,11 @@ const MatrixRain = () => {
     return <canvas ref={canvasRef} className="absolute inset-0 z-0 opacity-10 pointer-events-none" />;
 };
 
-const DashboardCard = ({ icon: Icon, title, desc, value, subtext, color, path, delay }) => (
+import TourOverlay from '../components/ui/TourOverlay';
+
+const DashboardCard = ({ icon: Icon, title, desc, value, subtext, color, path, delay, id }) => (
     <motion.div
+        id={id}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay, duration: 0.5 }}
@@ -91,7 +94,7 @@ const DashboardCard = ({ icon: Icon, title, desc, value, subtext, color, path, d
     </motion.div>
 );
 
-const WelcomeModal = ({ onClose }) => (
+const WelcomeModal = ({ onClose, onStartTour }) => (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
         <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
@@ -108,7 +111,7 @@ const WelcomeModal = ({ onClose }) => (
             </div>
 
             <p className="text-gray-300 mb-6 leading-relaxed">
-                Welcome, Initiate. Your neural link to the <span className="text-cyan-400 font-bold">CodeWarriors</span> network is established.
+                Welcome, Initiate. Your neural link to the <span className="text-cyan-400 font-bold">Python Warriors</span> network is established.
                 <br /><br />
                 Your mission is to master the Python protocol through combat and study.
             </p>
@@ -132,12 +135,23 @@ const WelcomeModal = ({ onClose }) => (
                 </div>
             </div>
 
-            <button
-                onClick={onClose}
-                className="w-full py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg font-orbitron tracking-widest transition-all shadow-lg shadow-cyan-500/20"
-            >
-                INITIALIZE SEQUENCE
-            </button>
+            <div className="flex gap-4">
+                <button
+                    onClick={onClose}
+                    className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-gray-300 font-bold rounded-lg font-orbitron tracking-widest transition-all border border-white/10"
+                >
+                    SKIP PROTOCOL
+                </button>
+                <button
+                    onClick={() => {
+                        onClose();
+                        onStartTour();
+                    }}
+                    className="flex-[2] py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg font-orbitron tracking-widest transition-all shadow-lg shadow-cyan-500/20"
+                >
+                    INITIALIZE TOUR
+                </button>
+            </div>
         </motion.div>
     </div>
 );
@@ -147,6 +161,7 @@ const Nexus = () => {
     const { playerData } = usePlayer();
     const [greeting, setGreeting] = useState('');
     const [showWelcome, setShowWelcome] = useState(false);
+    const [tourOpen, setTourOpen] = useState(false);
 
     useEffect(() => {
         const hour = new Date().getHours();
@@ -165,6 +180,7 @@ const Nexus = () => {
 
     const dashboardItems = [
         {
+            id: "dash-academy",
             title: "ACADEMY // LEARN",
             value: "START HERE",
             desc: "Master Python Basics to unlock weapons.",
@@ -176,6 +192,7 @@ const Nexus = () => {
             recommended: true
         },
         {
+            id: "dash-directives",
             title: "DIRECTIVES // MISSIONS",
             value: "3 PENDING",
             desc: "Daily tasks to earn XP and Gold.",
@@ -186,6 +203,7 @@ const Nexus = () => {
             delay: 0.2
         },
         {
+            id: "dash-arena",
             title: "ARENA // COMBAT",
             value: "BATTLE SIM",
             desc: "Test your skills against AI Glitches.",
@@ -196,6 +214,7 @@ const Nexus = () => {
             delay: 0.3
         },
         {
+            id: "dash-operations",
             title: "OPERATIONS // PROJECTS",
             value: "BUILD APPS",
             desc: "Apply your skills in real scenarios.",
@@ -207,10 +226,39 @@ const Nexus = () => {
         },
     ];
 
+    const tourSteps = [
+        {
+            targetId: 'dash-academy',
+            title: 'BEGIN YOUR TRAINING',
+            content: 'The ACADEMY is where all Warriors start. Learn Python syntax, solve coding challenges, and unlock new abilities here.'
+        },
+        {
+            targetId: 'dash-directives',
+            title: 'DAILY MISSIONS',
+            content: 'Check DIRECTIVES every day for new tasks. Completing them earns you XP and Gold to upgrade your gear.'
+        },
+        {
+            targetId: 'dash-arena',
+            title: 'TEST YOUR MIGHT',
+            content: 'The ARENA is a combat simulation. Use your code to defeat enemies and climb the leaderboards.'
+        },
+        {
+            targetId: 'system-status',
+            title: 'VITAL SIGNS',
+            content: 'Monitor your HP, Energy, and Rank progress here. Keep your systems optimal, Warrior.'
+        }
+    ];
+
     return (
         <PageLayout>
             <MatrixRain />
-            {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} />}
+            {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} onStartTour={() => setTourOpen(true)} />}
+
+            <TourOverlay
+                isOpen={tourOpen}
+                onClose={() => setTourOpen(false)}
+                steps={tourSteps}
+            />
 
             <div className="flex-1 w-full p-4 md:p-8 flex flex-col gap-8 relative z-10">
                 {/* Hero Section */}
@@ -290,7 +338,14 @@ const Nexus = () => {
                     </div>
 
                     {/* Quick Actions / System Status */}
-                    <div className="glass-panel p-6 border-t-2 border-t-gray-700 flex flex-col gap-4">
+                    <div id="system-status" className="glass-panel p-6 border-t-2 border-t-gray-700 flex flex-col gap-4 relative">
+                        <button
+                            onClick={() => setTourOpen(true)}
+                            className="absolute top-4 right-4 text-gray-500 hover:text-cyan-400 transition-colors"
+                            title="Replay Tutorial"
+                        >
+                            <Info size={16} />
+                        </button>
                         <h3 className="font-orbitron text-lg text-gray-200 flex items-center gap-2">
                             <Cpu size={18} className="text-purple-500" /> SYSTEM STATUS
                         </h3>

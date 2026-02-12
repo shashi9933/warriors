@@ -153,7 +153,7 @@ const Navbar = () => {
                             </div>
                             <div className="flex flex-col">
                                 <span className="font-orbitron font-bold text-lg md:text-xl tracking-wider text-white">
-                                    CODE<span className="text-theme-text">WARRIORS</span>
+                                    PYTHON<span className="text-theme-text">WARRIORS</span>
                                 </span>
                                 <span className="text-[10px] text-gray-400 font-mono tracking-[0.2em] hidden md:block">SYSTEM.V2.0</span>
                             </div>
