@@ -6,6 +6,7 @@ import { Zap, Activity, Terminal, Cpu, Database, Award, Target, Globe, BookOpen,
 import { useSound } from '../context/SoundContext';
 import { usePlayer } from '../context/PlayerContext';
 import { clsx } from 'clsx';
+import IntroductionModule from '../components/dashboard/IntroductionModule';
 
 // --- Matrix Rain Effect (Optimized) ---
 const MatrixRain = () => {
@@ -290,6 +291,7 @@ const Nexus = () => {
                 </motion.div>
 
                 {/* Dashboard Grid */}
+                <IntroductionModule />
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {dashboardItems.map((item, idx) => (
                         <div key={idx} className="relative">
